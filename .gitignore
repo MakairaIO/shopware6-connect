@@ -1,0 +1,4 @@
+/.psalm-cache
+/.php-cs-fixer.cache
+/vendor
+/composer.lock

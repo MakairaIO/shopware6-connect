@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>Makaira API</title>
+        <title lang="de-DE">Makaira API</title>
+        <input-field type="url">
+            <name>apiBaseUrl</name>
+            <label>Base-URL of Makaira API</label>
+            <label lang="de-DE">Basis-URL der Makaira-API</label>
+            <placeholder>https://&lt;customer&gt;.makaira.io</placeholder>
+        </input-field>
+        <input-field type="password">
+            <name>apiSharedSecret</name>
+            <label>Shared-Secret</label>
+            <label lang="de-DE">Shared-Secret</label>
+        </input-field>
+        <input-field type="text">
+            <name>apiCustomer</name>
+            <label>Customer</label>
+            <label lang="de-DE">Kunde</label>
+        </input-field>
+        <input-field type="text">
+            <name>apiInstance</name>
+            <label>Instance</label>
+            <label lang="de-DE">Instanz</label>
+            <placeholder>e.g. live</placeholder>
+            <placeholder lang="de-DE">z.B. live</placeholder>
+        </input-field>
+        <input-field type="int">
+            <name>apiTimeout</name>
+            <label>Timeout in seconds</label>
+            <label lang="de-DE">Timeout in Sekunden</label>
+            <defaultValue>30</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Persistence Layer</title>
+        <title lang="de-DE">Persistence Layer</title>
+        <input-field type="datetime">
+            <name>lastPersistenceLayerUpdate</name>
+            <label>Last update of persistence layer</label>
+            <label lang="de-DE">Letztes Update des Persistence Layers</label>
+        </input-field>
+    </card>
+</config>

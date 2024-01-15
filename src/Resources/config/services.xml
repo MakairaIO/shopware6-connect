@@ -1,0 +1,149 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Ixomo\MakairaConnect\Api\ApiClientFactory">
+            <argument key="$httpClient" type="service" id="http_client"/>
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+            <argument key="$info" type="service" id="Ixomo\MakairaConnect\PluginInfo"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Api\ApiGatewayFactory">
+            <argument key="$apiClientFactory" type="service" id="Ixomo\MakairaConnect\Api\ApiClientFactory"/>
+            <argument key="$clock" type="service" id="Psr\Clock\ClockInterface"/>
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Command\PersistenceLayer\History\ClearCommand">
+            <argument key="$historyManager" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Command\PersistenceLayer\History\GarbageCollectorCommand">
+            <argument key="$historyManager" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Command\PersistenceLayer\RebuildCommand">
+            <argument key="$apiGatewayFactory" type="service" id="Ixomo\MakairaConnect\Api\ApiGatewayFactory"/>
+            <argument key="$historyManager" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Command\PersistenceLayer\SwitchCommand">
+            <argument key="$apiGatewayFactory" type="service" id="Ixomo\MakairaConnect\Api\ApiGatewayFactory"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Command\PersistenceLayer\UpdateCommand">
+            <argument key="$repository" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\EntityRepository"/>
+            <argument key="$updater" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Updater"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <argument key="$clock" type="service" id="Psr\Clock\ClockInterface"/>
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\DataAbstractionLayer\DeleteSubscriber">
+            <argument key="$bus" type="service" id="messenger.default_bus"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\History\HistoryDefinition">
+            <tag name="shopware.entity.definition" entity="ixomo_makaira_connect_history"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager">
+            <argument key="$repository" type="service" id="ixomo_makaira_connect_history.repository"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Handler\DeleteEntitiesHandler">
+            <argument key="$updater" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Updater"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Handler\UpdateEntitiesHandler">
+            <argument key="$updater" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Updater"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\CategoryNormalizer">
+            <argument key="$repository" type="service" id="sales_channel.category.repository"/>
+            <argument key="$urlGenerator" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator"/>
+            <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductManufacturerNormalizer">
+            <argument key="$repository" type="service" id="product_manufacturer.repository"/>
+            <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductNormalizer">
+            <argument key="$repository" type="service" id="sales_channel.product.repository"/>
+            <argument key="$urlGenerator" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator"/>
+            <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerRegistry">
+            <argument key="$normalizers" type="tagged_iterator" tag="ixomo.makaira_connect.persistence_layer.normalizer" default-index-method="getSupportedEntity"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator">
+            <argument key="$seoUrlRepository" type="service" id="sales_channel.seo_url.repository"/>
+            <argument key="$router" type="service" id="Symfony\Component\Routing\RouterInterface"/>
+            <argument key="$urlHelper" type="service" id="Symfony\Component\HttpFoundation\UrlHelper"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\ScheduledTask\UpdateTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\ScheduledTask\UpdateTaskHandler">
+            <argument key="$scheduledTaskRepository" type="service" id="scheduled_task.repository"/>
+            <argument key="$entityRepository" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\EntityRepository"/>
+            <argument key="$bus" type="service" id="messenger.default_bus"/>
+            <argument key="$contextFactory" type="service" id="Ixomo\MakairaConnect\SalesChannel\ContextFactory"/>
+            <argument key="$clock" type="service" id="Psr\Clock\ClockInterface"/>
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\EntityRepository">
+            <argument key="$eventDispatcher" type="service" id="event_dispatcher"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Updater">
+            <argument key="$database" type="service" id="Doctrine\DBAL\Connection"/>
+            <argument key="$normalizerRegistry" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerRegistry"/>
+            <argument key="$eventDispatcher" type="service" id="event_dispatcher"/>
+            <argument key="$apiGatewayFactory" type="service" id="Ixomo\MakairaConnect\Api\ApiGatewayFactory"/>
+            <argument key="$historyManager" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager"/>
+            <argument key="$clock" type="service" id="Psr\Clock\ClockInterface"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\SalesChannel\ContextFactory">
+            <argument key="$salesChannelRepository" type="service" id="sales_channel.repository"/>
+            <argument key="$contextFactory" type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PluginConfig">
+            <argument key="$systemConfigService" type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PluginInfo">
+            <argument key="$params" type="service" id="parameter_bag"/>
+            <argument key="$pluginService" type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
+        </service>
+    </services>
+
+</container>
