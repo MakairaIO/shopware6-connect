@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReferenceCollection;
+use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 final class DeleteEntities implements AsyncMessageInterface
 {
+    /**
+     * @param list<EntityReference> $entityReferences
+     */
     public function __construct(
-        private readonly EntityReferenceCollection $entityReferences,
+        private readonly array $entityReferences,
         private readonly string $salesChannelId,
         private readonly string $languageId,
     ) {
     }
 
-    public function getEntityReferences(): EntityReferenceCollection
+    /**
+     * @return list<EntityReference>
+     */
+    public function getEntityReferences(): array
     {
         return $this->entityReferences;
     }

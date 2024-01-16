@@ -39,7 +39,7 @@ final class UpdateTaskHandler extends ScheduledTaskHandler
 
             if (0 < \count($modifiedEntities)) {
                 foreach ($modifiedEntities->chunk(25) as $chunk) {
-                    $this->bus->dispatch(new UpdateEntities($chunk, $context->getSalesChannelId(), $context->getLanguageId()));
+                    $this->bus->dispatch(new UpdateEntities($chunk->getElements(), $context->getSalesChannelId(), $context->getLanguageId()));
                 }
             }
 

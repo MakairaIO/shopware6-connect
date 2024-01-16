@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Handler;
 
+use Ixomo\MakairaConnect\PersistenceLayer\EntityReferenceCollection;
 use Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message\DeleteEntities;
 use Ixomo\MakairaConnect\PersistenceLayer\Updater;
 use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
@@ -18,6 +19,9 @@ final class DeleteEntitiesHandler
 
     public function __invoke(DeleteEntities $message): void
     {
-        $this->updater->delete($message->getEntityReferences(), $this->contextFactory->create($message->getSalesChannelId(), $message->getLanguageId()));
+        $this->updater->delete(
+            new EntityReferenceCollection($message->getEntityReferences()),
+            $this->contextFactory->create($message->getSalesChannelId(), $message->getLanguageId())
+        );
     }
 }

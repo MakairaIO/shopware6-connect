@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\DataAbstractionLayer;
 
 use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReferenceCollection;
 use Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message\DeleteEntities;
 use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
 use Shopware\Core\Content\Category\CategoryEvents;
@@ -34,12 +33,12 @@ final class DeleteSubscriber implements EventSubscriberInterface
     public function onEntityDeleted(EntityDeletedEvent $event): void
     {
         foreach ($this->contextFactory->createAll($event->getContext()) as $context) {
-            $collection = new EntityReferenceCollection();
+            $entityReferences = [];
             foreach ($event->getIds() as $id) {
-                $collection->add(new EntityReference($event->getEntityName(), $id));
+                $entityReferences[] = new EntityReference($event->getEntityName(), $id);
             }
 
-            $this->bus->dispatch(new DeleteEntities($collection, $context->getSalesChannelId(), $context->getLanguageId()));
+            $this->bus->dispatch(new DeleteEntities($entityReferences, $context->getSalesChannelId(), $context->getLanguageId()));
         }
     }
 }
