@@ -1,5 +1,4 @@
 {
-<<<<<<< Updated upstream
   "name": "ixomo/makaira-shopware6-connect",
   "description": "Connect Shopware 6 to Makaira",
   "version": "0.1.0",
@@ -8,44 +7,6 @@
   "authors": [
     {
       "name": "ixomo GmbH"
-=======
-    "name": "ixomo/makaira-shopware6-connect",
-    "description": "Connect Shopware 6 to Makaira",
-    "version": "0.1.0",
-    "type": "shopware-platform-plugin",
-    "license": "proprietary",
-    "authors": [
-        {
-            "name": "ixomo GmbH"
-        }
-    ],
-    "require": {
-        "php": "^8.1",
-        "shopware/core": "^6.4",
-        "phpdocumentor/reflection-docblock": "^5.0"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.34",
-        "psalm/plugin-symfony": "^5.0",
-        "vimeo/psalm": "^5.15"
-    },
-    "autoload": {
-        "psr-4": {
-            "Ixomo\\MakairaConnect\\": "src"
-        }
-    },
-    "extra": {
-        "shopware-plugin-class": "Ixomo\\MakairaConnect\\IxomoMakairaConnect",
-        "label": {
-            "de-DE": "Makaira Connect",
-            "en-GB": "Makaira Connect"
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "symfony/runtime": true
-        }
->>>>>>> Stashed changes
     }
   ],
   "require": {

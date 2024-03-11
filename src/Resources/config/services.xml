@@ -143,10 +143,6 @@
             <argument key="$params" type="service" id="parameter_bag"/>
             <argument key="$pluginService" type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
         </service>
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
         <service id="Psr\Clock\ClockInterface" class="Ixomo\MakairaConnect\Utils\SystemClock"/>
     </services>
 
