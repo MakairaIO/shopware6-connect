@@ -49,10 +49,6 @@ final class UpdateTaskHandler extends ScheduledTaskHandler
 
     public static function getHandledMessages(): iterable
     {
-<<<<<<< Updated upstream
         return [UpdateTask::class];
-=======
-        return [ UpdateTask::class ];
->>>>>>> Stashed changes
     }
 }
