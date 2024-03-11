@@ -66,6 +66,7 @@ final class Updater
                 }
 
                 if (2 < \count($filteredData)) {
+
                     $apiGateway->updatePersistenceRevision($filteredData, $this->getLanguageCode($context));
 
                     $addToLog = true;
