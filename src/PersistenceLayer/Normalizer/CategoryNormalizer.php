@@ -34,6 +34,7 @@ final class CategoryNormalizer implements NormalizerInterface
         return [
             'id' => $entityId,
             'type' => 'category',
+            'shop' => 1,
             'category_title' => $category->getTranslation('name'),
             'level' => $category->getLevel(),
             'parent' => $category->getParentId() ?? '',
