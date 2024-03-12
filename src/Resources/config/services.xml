@@ -144,6 +144,19 @@
             <argument key="$pluginService" type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
         </service>
         <service id="Psr\Clock\ClockInterface" class="Ixomo\MakairaConnect\Utils\SystemClock"/>
-    </services>
 
+        <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Search\ProductSearchRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute" decoration-on-invalid="ignore">
+            <argument type="service" id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Search\ProductSearchRoute.inner" />
+            <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sales_channel.product.repository" />
+            <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition" />
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" />
+        </service>
+
+        <!-- <service id="Ixomo\MakairaConnect\Core\Content\Category\SalesChannel\CachedCategoryRoute" decorates="Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute" decoration-on-invalid="ignore">
+            <argument type="service" id="Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute.inner" />
+        </service> -->
+
+    </services>
 </container>
