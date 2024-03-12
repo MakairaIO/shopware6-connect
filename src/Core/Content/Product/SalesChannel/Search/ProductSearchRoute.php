@@ -74,9 +74,9 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $r =  json_decode($response->getBody()->getContents());
 
         $ids = [];
-        // foreach ($r->product->items as $product) {
-        //     array_push($ids, $product->id);
-        // }
+         foreach ($r->product->items as $product) {
+             $ids[] = $product->id;
+         }
 
 
 

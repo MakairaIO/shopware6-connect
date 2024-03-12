@@ -73,6 +73,7 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         $streamId = $this->extendCriteria($context, $criteria, $category);
 
+
         $entitiesFromMakaira = $this->fetchMakairaProductsFromCategory($categoryId);
 
 
@@ -124,7 +125,7 @@ class ProductListingRoute extends AbstractProductListingRoute
     )
     {
         $client = new \GuzzleHttp\Client();
-
+        // TODO: pagination, so count and offset?
         $response = $client->request('POST', 'https://loberon.makaira.io/search/public', [
             'json' => [
                 "isSearch" => false,
