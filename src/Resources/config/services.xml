@@ -154,6 +154,18 @@
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" />
         </service>
 
+      <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" decoration-on-invalid="ignore">
+        <argument type="service" id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing\ProductListingRoute.inner" />
+        <argument type="service" id="category.repository" />
+        <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+        <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder" />
+        <argument type="service" id="event_dispatcher" />
+        <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" />
+        <argument type="service" id="sales_channel.product.repository" />
+        <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition" />
+      </service>
+
+
         <!-- <service id="Ixomo\MakairaConnect\Core\Content\Category\SalesChannel\CachedCategoryRoute" decorates="Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute" decoration-on-invalid="ignore">
             <argument type="service" id="Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute.inner" />
         </service> -->

@@ -45,7 +45,17 @@ final class ProductNormalizer implements NormalizerInterface
             }
             $filteredCustomFields[$key] = $this->removeEscapeCharacters($value);
         }
-
+        $categoriesRaw = $product->getCategories()->getElements();
+        $categories = [];
+        foreach ($categoriesRaw as $category) {
+            $categories[] = [
+                'catid' => $category->getId(),
+                'title' => $category->getName(),
+                'shopid' => 1,
+                'pos' => 0,
+                'path' => ''
+            ];
+        }
         return [
             'id' => $entityId,
             'type' => null !== $product->getParentId() ? 'variant' : 'product',
@@ -62,10 +72,7 @@ final class ProductNormalizer implements NormalizerInterface
             'meta_title' => $product->getTranslation('metaTitle'),
             'meta_description' => $product->getTranslation('metaDescription'),
             'attributeStr' => $this->getGroupedOptions($product->getProperties(), $product->getOptions()),
-            'category' => $product->getCategories()->map(fn (CategoryEntity $category): array => [
-                'catid' => $category->getId(),
-                'title' => $category->getName(),
-            ]),
+            'category' => $categories,
             'width' => $product->getWidth(),
             'height' => $product->getHeight(),
             'length' => $product->getLength(),
