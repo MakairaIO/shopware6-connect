@@ -62,6 +62,7 @@ final class ProductNormalizer implements NormalizerInterface
             'parent' => $product->getParentId() ?? '',
             'isVariant' => null !== $product->getParentId(),
             'shop' => 1,
+            'ean' => $product->getEan() ?? '',
             'active' => (bool) $product->getActive(),
             'stock' => $product->getAvailableStock(),
             'onstock' => 0 < $product->getAvailableStock(),
