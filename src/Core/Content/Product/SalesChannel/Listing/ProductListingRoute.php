@@ -86,6 +86,17 @@ class ProductListingRoute extends AbstractProductListingRoute
         $criteria->setIds($entitiesFromMakaira);
         $result = $this->salesChannelProductRepository->search($criteria,  $context);
 
+        $productMap = [];
+        foreach ($result->getElements() as $element) {
+            $productMap[$element->productNumber] = $element;
+        }
+        $result->clear();
+        foreach ($entitiesFromMakaira as $id) {
+            if (isset($productMap[$id])) {
+                $result->add($productMap[$id]);
+            }
+        }
+
         /** @var ProductListingResult $result */
         $result = ProductListingResult::createFrom($result);
 
@@ -131,8 +142,8 @@ class ProductListingRoute extends AbstractProductListingRoute
                 "isSearch" => false,
                 "enableAggregations" => true,
                 "constraints" => [
-                    "query.shop_id" => "1",
-                    "query.language" => "de",
+                    "query.shop_id" => "3",
+                    "query.language" => "at",
                     "query_use_stock" => true,
                     "query.category_id" => [$categoryId],
                 ],

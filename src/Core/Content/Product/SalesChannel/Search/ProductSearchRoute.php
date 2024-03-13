@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Search;
 
+use DreiscSeoPro\Core\Content\Product\ProductRepository;
 use Shopware\Core\Content\Product\Events\ProductSearchCriteriaEvent;
 use Shopware\Core\Content\Product\Events\ProductSearchResultEvent;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -17,7 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,8 +63,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
                 "isSearch" => true,
                 "enableAggregations" => true,
                 "constraints" => [
-                    "query.shop_id" => "1",
-                    "query.language" => "de"
+                    "query.shop_id" => "3",
+                    "query.language" => "at"
                 ],
                 "searchPhrase" => $query,
                 "count" => "10"
@@ -72,13 +75,10 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         ]);
 
         $r =  json_decode($response->getBody()->getContents());
-
         $ids = [];
-         foreach ($r->product->items as $product) {
+        foreach ($r->product->items as $product) {
              $ids[] = $product->id;
          }
-
-
 
         $criteria ??= $this->criteriaBuilder->handleRequest(
             $request,
@@ -87,10 +87,24 @@ class ProductSearchRoute extends AbstractProductSearchRoute
             $context->getContext()
         );
 
-        $criteria->setIds($ids);
-
+        $criteria->addFilter(new EqualsAnyFilter('productNumber', $ids));
+        $criteria->resetSorting();
 
         $result = $this->salesChannelProductRepository->search($criteria,  $context);
+
+
+        //sort result elements by productNumber from $ids
+        $productMap = [];
+        foreach ($result->getElements() as $element) {
+            $productMap[$element->productNumber] = $element;
+        }
+        $result->clear();
+        // Step 2: Reorder products based on $ids
+        foreach ($ids as $id) {
+            if (isset($productMap[$id])) {
+                $result->add($productMap[$id]);
+            }
+        }
 
 
         $this->eventDispatcher->dispatch(
