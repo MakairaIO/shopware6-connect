@@ -57,7 +57,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
 
         $client = new \GuzzleHttp\Client();
-
+        $count = $criteria->getLimit();
+        $offset = $criteria->getOffset();
         $response = $client->request('POST', 'https://loberon.makaira.io/search/public', [
             'json' => [
                 "isSearch" => true,
@@ -67,7 +68,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
                     "query.language" => "at"
                 ],
                 "searchPhrase" => $query,
-                "count" => "10"
+                "count" => $count,
+                "offset"=> $offset,
             ],
             'headers' => [
                 'X-Makaira-Instance' => 'live_at_sw6',
@@ -75,6 +77,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         ]);
 
         $r =  json_decode($response->getBody()->getContents());
+        $total = $r->product->total;
+
         $ids = [];
         foreach ($r->product->items as $product) {
              $ids[] = $product->id;
@@ -89,32 +93,38 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $ids));
         $criteria->resetSorting();
-
+        // we have to set offset on 0, because we only have 24 product
+        $criteria->setOffset(0);
         $result = $this->salesChannelProductRepository->search($criteria,  $context);
-
+        // back to original offset, so pagination in shopware works
+        $result->getCriteria()->setOffset($offset);
+        $newresult = new EntitySearchResult(
+            'product',
+            $total,
+            $result->getEntities(),
+            $result->getAggregations(),
+            $result->getCriteria(),
+            $result->getContext()
+        );
 
         //sort result elements by productNumber from $ids
         $productMap = [];
-        foreach ($result->getElements() as $element) {
+        foreach ($newresult->getElements() as $element) {
             $productMap[$element->productNumber] = $element;
         }
-        $result->clear();
+        $newresult->clear();
         // Step 2: Reorder products based on $ids
         foreach ($ids as $id) {
             if (isset($productMap[$id])) {
-                $result->add($productMap[$id]);
+                $newresult->add($productMap[$id]);
             }
         }
-
 
         $this->eventDispatcher->dispatch(
             new ProductSearchCriteriaEvent($request, $criteria, $context)
         );
 
-
-
-        $result = ProductListingResult::createFrom($result);
-
+        $result = ProductListingResult::createFrom($newresult);
         $this->eventDispatcher->dispatch(
             new ProductSearchResultEvent($request, $result, $context)
         );

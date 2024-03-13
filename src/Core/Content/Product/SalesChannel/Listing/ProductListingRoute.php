@@ -16,6 +16,7 @@ use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -73,8 +74,17 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         $streamId = $this->extendCriteria($context, $criteria, $category);
 
+        $count = $criteria->getLimit();
+        $offset = $criteria->getOffset();
 
-        $entitiesFromMakaira = $this->fetchMakairaProductsFromCategory($categoryId);
+        $response = $this->fetchMakairaProductsFromCategory($categoryId, $count, $offset);
+        $r =  json_decode($response->getBody()->getContents());
+        $total = $r->product->total;
+        $products = $r->product->items;
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product->id;
+        }
 
 
         $criteria ??= $this->criteriaBuilder->handleRequest(
@@ -83,22 +93,32 @@ class ProductListingRoute extends AbstractProductListingRoute
             $this->definition,
             $context->getContext()
         );
-        $criteria->setIds($entitiesFromMakaira);
+        $criteria->setIds($ids);
+        $criteria->setOffset(0);
         $result = $this->salesChannelProductRepository->search($criteria,  $context);
+        $result->getCriteria()->setOffset($offset);
 
+        $newResult = new EntitySearchResult(
+            'product',
+            $total,
+            $result->getEntities(),
+            $result->getAggregations(),
+            $result->getCriteria(),
+            $result->getContext()
+        );
         $productMap = [];
-        foreach ($result->getElements() as $element) {
+        foreach ($newResult->getElements() as $element) {
             $productMap[$element->productNumber] = $element;
         }
         $result->clear();
-        foreach ($entitiesFromMakaira as $id) {
+        foreach ($ids as $id) {
             if (isset($productMap[$id])) {
-                $result->add($productMap[$id]);
+                $newResult->add($productMap[$id]);
             }
         }
 
         /** @var ProductListingResult $result */
-        $result = ProductListingResult::createFrom($result);
+        $result = ProductListingResult::createFrom($newResult);
 
         $result->addCurrentFilter('navigationId', $categoryId);
 
@@ -133,6 +153,8 @@ class ProductListingRoute extends AbstractProductListingRoute
 
     public function fetchMakairaProductsFromCategory(
         string $categoryId,
+        int $count,
+        int $offset
     )
     {
         $client = new \GuzzleHttp\Client();
@@ -147,8 +169,8 @@ class ProductListingRoute extends AbstractProductListingRoute
                     "query_use_stock" => true,
                     "query.category_id" => [$categoryId],
                 ],
-                "count" => "25",
-                "offset" => 0,
+                "count" => $count,
+                "offset" => $offset,
                 "searchPhrase" => "",
                 "aggregations" => [],
                 "sorting" => [],
@@ -159,12 +181,6 @@ class ProductListingRoute extends AbstractProductListingRoute
             ],
         ]);
 
-        $r =  json_decode($response->getBody()->getContents());
-        $products = $r->product->items;
-        $ids = [];
-        foreach ($products as $product) {
-            $ids[] = $product->id;
-        }
-        return $ids;
+        return $response;
     }
 }
