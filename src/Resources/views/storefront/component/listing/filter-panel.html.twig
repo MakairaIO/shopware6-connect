@@ -1,103 +1,19 @@
 {% sw_extends '@Storefront/storefront/component/listing/filter-panel.html.twig' %}
 
-{% block component_filter_panel_header %}
-	<div class="filter-panel-offcanvas-only filter-panel-offcanvas-header offcanvas-header row align-items-center header-row {{ gridNoGuttersClass }}">
-
-		{% block component_filter_panel_header_title %}
-			<div class="col-3 filter-panel-offcanvas-title">
-				<span class="sr-only">{{ "listing.filterTitleText"|trans }}</span>
-			</div>
-		{% endblock %}
-
-		{% block component_filter_panel_header_logo %}
-			<div class="col header-logo-col">
-				{% sw_include '@Storefront/storefront/layout/header/logo.html.twig' %}
-			</div>
-		{% endblock %}
-
-		{% block component_filter_panel_header_close %}
-			<div
-				class="col-3">
-				{# @deprecated tag:v6.5.0 - Bootstrap v5 will not require classes `.btn-block .sticky-top`. Only `.offcanvas-body` will
-				        be scrollable #}
-				<div class="filter-panel-offcanvas-close btn offcanvas-close js-offcanvas-close{% if not feature('v6.5.0.0') %} btn-block sticky-top{% endif %}">
-					{% block utilities_offcanvas_close_icon %}
-						{% sw_icon 'close' style {
-                    pack: 'streamline-regular',
-                    size: 'xs',
-                } %}
-					{% endblock %}
-
-					{% block utilities_offcanvas_close_text %}
-						<span class="sr-only">{{ "general.offcanvasCloseMenu"|trans|sw_sanitize }}</span>
-					{% endblock %}
-				</div>
-			</div>
-		{% endblock %}
-
-	</div>
-{% endblock %}
-
-{% block component_filter_panel_element %}
-	<div class="filter-panel{% if sidebar %} is--sidebar{% endif %}">
-
-		{% block component_filter_panel_items_container %}
-			<div class="filter-panel-sorting-container">
-				{% sw_include '@Storefront/storefront/component/listing/sorting.html.twig' with {
-            current: listing.sorting,
-            sortings: listing.availableSortings
-        } %}
-			</div>
-
-			{{ parent() }}
-		{% endblock %}
-
-		{% block component_filter_panel_active_container %}
-			<div class="filter-panel-active-container">
-				{% block component_filter_panel_active_container_inner %}{% endblock %}
-			</div>
-		{% endblock %}
-
-		{% block component_filter_panel_apply_button %}
-			<div class="filter-panel-offcanvas-only filter-panel-button-container">
-				<button class="btn btn-primary js-offcanvas-close" type="button">
-					{{ "listing.filterApplyLabel"|trans }}
-				</button>
-			</div>
-		{% endblock %}
-
-	</div>
-{% endblock %}
-
 
 {# Render order differently to Shopware (price before everything else) #}
 {% block component_filter_panel_items %}
 
-	{% block component_filter_panel_item_manufacturer %}
-		{# @var manufacturers \Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult #}
-		{% set manufacturers = listing.aggregations.get('manufacturer') %}
-		{% if not manufacturers.entities is empty %}
-			{% set manufacturersSorted = manufacturers.entities|sort((a, b) => a.translated.name|lower <=> b.translated.name|lower) %}
 
-			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
-                                    elements: manufacturersSorted,
-                                    sidebar: sidebar,
-                                    name: 'manufacturer',
-                                    displayName: 'listing.filterManufacturerDisplayName'|trans|sw_sanitize
-                                } %}
-		{% endif %}
-	{% endblock %}
-
-	{% block component_filter_panel_item_properties %}
+	{% block component_filter_panel_item_makaira %}
 		{# @var properties \Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult #}
-		{% set properties = listing.aggregations.get('properties') %}
-
+		{% set properties = listing.aggregations.get('filter_color') %}
 		{% if not properties.entities is empty %}
 			{% for property in properties.entities %}
 				{% sw_include '@Storefront/storefront/component/listing/filter/filter-property-select.html.twig' with {
                                         elements: property.options,
                                         sidebar: sidebar,
-                                        name: 'properties',
+                                        name: 'filter_color',
                                         displayName: property.translated.name,
                                         displayType: property.displayType,
                                         pluginSelector: 'filter-property-select',
@@ -107,8 +23,9 @@
 		{% endif %}
 	{% endblock %}
 
+
 	{% block component_filter_panel_item_price %}
-		{% set price = listing.aggregations.get('price') %}
+		{% set price = listing.aggregations.get('filter_price') %}
 
 		{% if price.min !== null and price.max !== null %}
 			{# '@deprecated tag:v6.5.0 - Variable `price` will no longer be required by filter-range.html.twig - Use `minInputValue` and `maxInputValue` instead.' #}
@@ -126,27 +43,36 @@
 		{% endif %}
 	{% endblock %}
 
-	{% block component_filter_panel_item_rating_select %}
-		{% set rating = listing.aggregations.get('rating') %}
+	{% block component_filter_panel_item_nachhaltigkeit %}
 
-		{% if rating.max > 0 %}
-			{% sw_include '@Storefront/storefront/component/listing/filter/filter-rating-select.html.twig' with {
+
+		{% set nachhaltigkeit = listing.aggregations.get('filter_Nachhaltigkeit') %}
+		{% if not nachhaltigkeit.entities is empty %}
+
+			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
+                                    elements: nachhaltigkeit.entities,
                                     sidebar: sidebar,
-                                    name: 'rating',
-                                    pluginSelector: 'filter-rating-select',
-                                    displayName: 'listing.filterRatingDisplayName'|trans|sw_sanitize
+                                    name: 'filter_nachhaltigkeit',
+                                    displayName: "Nachhaltigkeit"
                                 } %}
 		{% endif %}
+
 	{% endblock %}
 
-	{% block component_filter_panel_item_shipping_free %}
-		{% set shippingFree = listing.aggregations.get('shipping-free') %}
 
-		{% if shippingFree.max > 0 %}
-			{% sw_include '@Storefront/storefront/component/listing/filter/filter-boolean.html.twig' with {
-                                    name: 'shipping-free',
-                                    displayName: 'listing.filterFreeShippingDisplayName'|trans|sw_sanitize
+	{% block component_filter_panel_item_sale %}
+		{% set sale = listing.aggregations.get('filter_Sale') %}
+		{% if not sale.entities is empty %}
+
+			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
+                                    elements: sale.entities,
+                                    sidebar: sidebar,
+                                    name: 'filter_sale',
+                                    displayName: "Sale"
                                 } %}
 		{% endif %}
+
 	{% endblock %}
+
+
 {% endblock %}
