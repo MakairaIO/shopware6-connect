@@ -35,6 +35,16 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[AllowDynamicProperties]
 class ProductListingRoute extends AbstractProductListingRoute
 {
+    const MAKAIRA_SORTING_MAPPING = [
+        'field' => [
+            'product.name' => 'title',
+            'product.cheapestPrice' => 'price',
+        ],
+        'direction' => [
+            'ASC' => 'asc',
+            'DESC' => 'desc',
+        ],
+    ];
 
     public function __construct(
         AbstractProductListingRoute $decorated,
@@ -116,8 +126,18 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         $count = $criteria->getLimit();
         $offset = $criteria->getOffset();
-
-        $response = $this->fetchMakairaProductsFromCategory($catId, $count, $offset, $makairaFilter);
+        $sorting = $criteria->getSorting();
+        // map sorting from criteria to makaira
+        $sort = [];
+        foreach ($sorting as $sortingField) {
+            $field = self::MAKAIRA_SORTING_MAPPING['field'][$sortingField->getField()] ?? null;
+            $direction = self::MAKAIRA_SORTING_MAPPING['direction'][$sortingField->getDirection()] ?? null;
+            if ($field && $direction) {
+                $sort[] = [$field, $direction];
+            }
+        }
+        $makairaSorting = $sort ? [$sort[0][0] => $sort[0][1]] : [];
+        $response = $this->fetchMakairaProductsFromCategory($catId, $count, $offset, $makairaFilter, $makairaSorting);
         $r =  json_decode($response->getBody()->getContents());
         $total = $r->product->total;
         $products = $r->product->items;
@@ -219,11 +239,13 @@ class ProductListingRoute extends AbstractProductListingRoute
             $criteria,
             $result->getContext()
         );
+
+
         $productMap = [];
         foreach ($newResult->getElements() as $element) {
             $productMap[$element->productNumber] = $element;
         }
-        $result->clear();
+        $newResult->clear();
         foreach ($ids as $id) {
             if (isset($productMap[$id])) {
                 $newResult->add($productMap[$id]);
@@ -268,7 +290,8 @@ class ProductListingRoute extends AbstractProductListingRoute
         string $categoryId,
         int $count,
         int $offset,
-        array $filter
+        array $filter,
+        array $sorting
     ) {
         $client = new \GuzzleHttp\Client();
         // TODO: pagination, so count and offset?
@@ -286,7 +309,7 @@ class ProductListingRoute extends AbstractProductListingRoute
                 "offset" => $offset,
                 "searchPhrase" => "",
                 "aggregations" => $filter,
-                "sorting" => [],
+                "sorting" => $sorting,
                 "customFilter" => [],
             ],
             'headers' => [
