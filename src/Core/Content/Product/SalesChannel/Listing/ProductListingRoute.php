@@ -139,6 +139,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         $result = $this->salesChannelProductRepository->search($newCriteria,  $context);
 
         $result->getCriteria()->setOffset($offset);
+        $result->getCriteria()->setLimit($count);
 
 
 
