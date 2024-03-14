@@ -90,6 +90,7 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
                 "enableAggregations" => true,
                 "constraints" => [
                     "query.shop_id" => "3",
+                    "query.use_stock" => true,
                     "query.language" => "at"
                 ],
                 "searchPhrase" => $query,
