@@ -163,6 +163,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $result = $this->salesChannelProductRepository->search($newCriteria,  $context);
         // back to original offset, so pagination in shopware works
         $result->getCriteria()->setOffset($offset);
+        $result->getCriteria()->setLimit($count);
 
 
         foreach ($r->product->aggregations as $aggregation) {
