@@ -28,6 +28,16 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ProductSearchRoute extends AbstractProductSearchRoute
 {
+    const MAKAIRA_SORTING_MAPPING = [
+        'field' => [
+            'product.name' => 'title',
+            'product.cheapestPrice' => 'price',
+        ],
+        'direction' => [
+            'ASC' => 'asc',
+            'DESC' => 'desc',
+        ],
+    ];
 
     public function __construct(
         private readonly AbstractProductSearchRoute $decorated,
@@ -59,6 +69,17 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $client = new \GuzzleHttp\Client();
         $count = $criteria->getLimit();
         $offset = $criteria->getOffset();
+        $sorting = $criteria->getSorting();
+        // map sorting from criteria to makaira
+        $sort = [];
+        foreach ($sorting as $sortingField) {
+            $field = self::MAKAIRA_SORTING_MAPPING['field'][$sortingField->getField()] ?? null;
+            $direction = self::MAKAIRA_SORTING_MAPPING['direction'][$sortingField->getDirection()] ?? null;
+            if ($field && $direction) {
+                $sort[] = [$field, $direction];
+            }
+        }
+        $makairaSorting = $sort ? [$sort[0][0] => $sort[0][1]] : [];
         $response = $client->request('POST', 'https://loberon.makaira.io/search/public', [
             'json' => [
                 "isSearch" => true,
@@ -70,6 +91,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
                 "searchPhrase" => $query,
                 "count" => $count,
                 "offset"=> $offset,
+                "sorting" => $makairaSorting
             ],
             'headers' => [
                 'X-Makaira-Instance' => 'live_at_sw6',
@@ -78,24 +100,26 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
         $r =  json_decode($response->getBody()->getContents());
         $total = $r->product->total;
-
         $ids = [];
         foreach ($r->product->items as $product) {
              $ids[] = $product->id;
          }
 
-        $criteria ??= $this->criteriaBuilder->handleRequest(
+        $newCriteria = $this->criteriaBuilder->handleRequest(
             $request,
             new Criteria(),
             $this->definition,
             $context->getContext()
         );
 
-        $criteria->addFilter(new EqualsAnyFilter('productNumber', $ids));
-        $criteria->resetSorting();
-        // we have to set offset on 0, because we only have 24 product
-        $criteria->setOffset(0);
-        $result = $this->salesChannelProductRepository->search($criteria,  $context);
+        $newCriteria->addSorting($criteria->getSorting()[0]);
+        $newCriteria->addExtension('sortings',$criteria->getExtensions()['sortings']);
+        $aggs = $criteria->getAggregations();
+        $newCriteria->addAggregation(...$aggs);
+        $newCriteria->addFilter(new EqualsAnyFilter('productNumber', $ids));
+
+        $newCriteria->setOffset(0);
+        $result = $this->salesChannelProductRepository->search($newCriteria,  $context);
         // back to original offset, so pagination in shopware works
         $result->getCriteria()->setOffset($offset);
         $newResult = new EntitySearchResult(
