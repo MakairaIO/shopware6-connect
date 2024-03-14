@@ -14,7 +14,14 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
+use Shopware\Core\Content\Property\PropertyGroupCollection;
+use Shopware\Core\Content\Property\PropertyGroupEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -70,6 +77,38 @@ class ProductListingRoute extends AbstractProductListingRoute
         $categoryCriteria = new Criteria([$categoryId]);
         $categoryCriteria->setTitle('product-listing-route::category-loading');
 
+
+        $makairaFilter = [];
+        foreach ($request->query as $key => $value) {
+            if (str_starts_with($key, 'filter_')) {
+                $makairaFilter[str_replace("filter_", "", $key)] = explode('|', $value);
+            }
+        }
+
+        $min = $request->query->get('min-price');
+        $max = $request->query->get('max-price');
+
+        if ($min) {
+            $makairaFilter['price_from'] = $min;
+        }
+
+        if ($max) {
+            $makairaFilter['price_to'] = $max;
+        }
+
+
+        if (array_key_exists('nachhaltigkeit', $makairaFilter)) {
+            unset($makairaFilter['nachhaltigkeit']);
+            $makairaFilter['Nachhaltigkeit'] = [1];
+        }
+
+        if (array_key_exists('sale', $makairaFilter)) {
+            unset($makairaFilter['sale']);
+            $makairaFilter['Sale'] = [1];
+        }
+
+
+
         /** @var CategoryEntity $category */
         $category = $this->categoryRepository->search($categoryCriteria, $context->getContext())->first();
         $catId = $category->getCustomFields()['loberonCatId'];
@@ -78,7 +117,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         $count = $criteria->getLimit();
         $offset = $criteria->getOffset();
 
-        $response = $this->fetchMakairaProductsFromCategory($catId, $count, $offset);
+        $response = $this->fetchMakairaProductsFromCategory($catId, $count, $offset, $makairaFilter);
         $r =  json_decode($response->getBody()->getContents());
         $total = $r->product->total;
         $products = $r->product->items;
@@ -100,6 +139,76 @@ class ProductListingRoute extends AbstractProductListingRoute
         $result = $this->salesChannelProductRepository->search($newCriteria,  $context);
 
         $result->getCriteria()->setOffset($offset);
+
+
+
+        foreach ($r->product->aggregations as $aggregation) {
+            if ($aggregation->type == 'list_multiselect') {
+                $makFilter = new PropertyGroupEntity();
+                $makFilter->setName($aggregation->key);
+                $makFilter->setId($aggregation->key);
+                $makFilter->setDisplayType('color');
+                $makFilter->setTranslated(['name' => $aggregation->title, 'position' => $aggregation->position]);
+                $makFilter->setFilterable(true);
+
+                $options = [];
+
+                foreach ($aggregation->values as $value) {
+                    $color = new PropertyGroupOptionEntity();
+                    $color->setName($value->key);
+                    $color->setId($value->key);
+                    $color->setColorHexCode($this->getColorName($value->key));
+                    $color->setTranslated(['name' => $this->getColorLocalizedName($value->key), 'position' => $value->position]);
+
+                    $options[] = $color;
+                }
+
+                $makFilter->setOptions(
+                    new PropertyGroupOptionCollection(
+                        $options
+                    )
+                );
+
+                $result->getAggregations()->add(
+                    new EntityResult(
+                        'filter_' . $aggregation->key,
+                        new PropertyGroupCollection([$makFilter])
+                    )
+                );
+            } elseif ($aggregation->type == 'range_slider_price') {
+
+                $makFilter = new StatsResult(
+                    'filter_' . $aggregation->key,
+                    $aggregation->min,
+                    $aggregation->max,
+                    ($aggregation->min + $aggregation->max) / 2,
+                    $aggregation->max
+                );
+
+                $result->getAggregations()->add(
+                    $makFilter
+                );
+            } elseif ($aggregation->type == 'list_multiselect_custom_1') {
+
+                $options = [];
+
+                $color = new PropertyGroupOptionEntity();
+                $color->setName($aggregation->key);
+                $color->setId($aggregation->key);
+                $color->setTranslated(['name' => $aggregation->title]);
+                $options[] = $color;
+
+                $makFilter = new EntityResult('filter_' . $aggregation->key, new EntityCollection(
+                    $options
+                ));
+
+
+                $result->getAggregations()->add(
+                    $makFilter
+                );
+            }
+        }
+
 
         $newResult = new EntitySearchResult(
             'product',
@@ -157,9 +266,9 @@ class ProductListingRoute extends AbstractProductListingRoute
     public function fetchMakairaProductsFromCategory(
         string $categoryId,
         int $count,
-        int $offset
-    )
-    {
+        int $offset,
+        array $filter
+    ) {
         $client = new \GuzzleHttp\Client();
         // TODO: pagination, so count and offset?
         $response = $client->request('POST', 'https://loberon.makaira.io/search/public', [
@@ -175,7 +284,7 @@ class ProductListingRoute extends AbstractProductListingRoute
                 "count" => $count,
                 "offset" => $offset,
                 "searchPhrase" => "",
-                "aggregations" => [],
+                "aggregations" => $filter,
                 "sorting" => [],
                 "customFilter" => [],
             ],
@@ -185,5 +294,82 @@ class ProductListingRoute extends AbstractProductListingRoute
         ]);
 
         return $response;
+    }
+
+
+    private function getColorName($key)
+    {
+        $colorIds = [
+            1  => 'black',
+            2  => 'brown',
+            3  => 'beige',
+            4  => 'gray',
+            5  => 'white',
+            6  => 'blue',
+            7  => 'petrol',
+            8  => 'green',
+            9  => 'yellow',
+            10 => 'orange',
+            11 => 'red',
+            12 => 'pink',
+            13 => 'purple',
+            14 => 'gold',
+            15 => 'silver',
+            16 => 'bronze',
+            17 => 'champagner',
+            18 => 'brass',
+            19 => 'clear',
+            20 => 'colorful',
+            21 => 'colorful',
+            22 => 'creme',
+            23 => 'creme',
+            24 => 'taupe',
+            25 => 'copper',
+            26 => 'linen',
+            30 => 'red',
+            31 => 'green',
+            32 => 'pink',
+            33 => 'green',
+        ];
+        return $colorIds[min($key, count($colorIds) - 1)];
+    }
+
+
+    private function getColorLocalizedName($key)
+    {
+        $localizedColorNames = [
+            1  => 'Schwarz',
+            2  => 'Braun',
+            3  => 'Beige',
+            4  => 'Grau',
+            5  => 'Weiß',
+            6  => 'Blau',
+            7  => 'Türkis',
+            8  => 'Grün',
+            9  => 'Gelb',
+            10 => 'Orange',
+            11 => 'Rot',
+            12 => 'Pink',
+            13 => 'Lila',
+            14 => 'Gold',
+            15 => 'Silber',
+            16 => 'Bronze',
+            17 => 'Champagner',
+            18 => 'Messing',
+            19 => 'Klar',
+            20 => 'Bunt',
+            21 => 'Gemustert',
+            22 => 'Creme',
+            23 => 'Natur',
+            24 => 'Taupe',
+            25 => 'Kupfer',
+            26 => 'Leinen',
+            30 => 'Dunkelrot',
+            31 => 'Hellgrün',
+            32 => 'Dunkelrosa',
+            33 => 'Dunkelgrün',
+        ];
+
+        return $localizedColorNames[min($key, count($localizedColorNames) - 1)];
     }
 }

@@ -95,12 +95,14 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         }
 
 
-        if (in_array('nachhaltigkeit', $makairaFilter)) {
-            $makairaFilter['nachhaltigkeit'] = 1;
+        if (array_key_exists('nachhaltigkeit', $makairaFilter)) {
+            unset($makairaFilter['nachhaltigkeit']);
+            $makairaFilter['Nachhaltigkeit'] = [1];
         }
 
-        if (in_array('sale', $makairaFilter)) {
-            $makairaFilter['Sale'] = 1;
+        if (array_key_exists('sale', $makairaFilter)) {
+            unset($makairaFilter['sale']);
+            $makairaFilter['Sale'] = [1];
         }
 
 
@@ -156,7 +158,6 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $newCriteria->addSorting($criteria->getSorting()[0]);
         $newCriteria->addExtension('sortings', $criteria->getExtensions()['sortings']);
         $aggs = $criteria->getAggregations();
-        $newCriteria->addAggregation(...$aggs);
         $newCriteria->addFilter(new EqualsAnyFilter('productNumber', $ids));
 
         $newCriteria->setOffset(0);
