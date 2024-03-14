@@ -17,6 +17,7 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -71,13 +72,13 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         /** @var CategoryEntity $category */
         $category = $this->categoryRepository->search($categoryCriteria, $context->getContext())->first();
-
+        $catId = $category->getCustomFields()['loberonCatId'];
         $streamId = $this->extendCriteria($context, $criteria, $category);
 
         $count = $criteria->getLimit();
         $offset = $criteria->getOffset();
 
-        $response = $this->fetchMakairaProductsFromCategory($categoryId, $count, $offset);
+        $response = $this->fetchMakairaProductsFromCategory($catId, $count, $offset);
         $r =  json_decode($response->getBody()->getContents());
         $total = $r->product->total;
         $products = $r->product->items;
@@ -87,15 +88,17 @@ class ProductListingRoute extends AbstractProductListingRoute
         }
 
 
-        $criteria ??= $this->criteriaBuilder->handleRequest(
+        $newCriteria = $this->criteriaBuilder->handleRequest(
             $request,
             new Criteria(),
             $this->definition,
             $context->getContext()
         );
-        $criteria->setIds($ids);
-        $criteria->setOffset(0);
-        $result = $this->salesChannelProductRepository->search($criteria,  $context);
+        $newCriteria->addFilter(new EqualsAnyFilter('productNumber', $ids));
+
+        $newCriteria->setOffset(0);
+        $result = $this->salesChannelProductRepository->search($newCriteria,  $context);
+
         $result->getCriteria()->setOffset($offset);
 
         $newResult = new EntitySearchResult(
@@ -103,7 +106,7 @@ class ProductListingRoute extends AbstractProductListingRoute
             $total,
             $result->getEntities(),
             $result->getAggregations(),
-            $result->getCriteria(),
+            $criteria,
             $result->getContext()
         );
         $productMap = [];

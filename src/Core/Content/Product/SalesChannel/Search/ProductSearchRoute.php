@@ -98,7 +98,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $result = $this->salesChannelProductRepository->search($criteria,  $context);
         // back to original offset, so pagination in shopware works
         $result->getCriteria()->setOffset($offset);
-        $newresult = new EntitySearchResult(
+        $newResult = new EntitySearchResult(
             'product',
             $total,
             $result->getEntities(),
@@ -109,14 +109,14 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
         //sort result elements by productNumber from $ids
         $productMap = [];
-        foreach ($newresult->getElements() as $element) {
+        foreach ($newResult->getElements() as $element) {
             $productMap[$element->productNumber] = $element;
         }
-        $newresult->clear();
+        $newResult->clear();
         // Step 2: Reorder products based on $ids
         foreach ($ids as $id) {
             if (isset($productMap[$id])) {
-                $newresult->add($productMap[$id]);
+                $newResult->add($productMap[$id]);
             }
         }
 
@@ -124,7 +124,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
             new ProductSearchCriteriaEvent($request, $criteria, $context)
         );
 
-        $result = ProductListingResult::createFrom($newresult);
+        $result = ProductListingResult::createFrom($newResult);
         $this->eventDispatcher->dispatch(
             new ProductSearchResultEvent($request, $result, $context)
         );
