@@ -302,7 +302,7 @@ class ProductListingRoute extends AbstractProductListingRoute
                 "constraints" => [
                     "query.shop_id" => "3",
                     "query.language" => "at",
-                    "query_use_stock" => true,
+                    "query.use_stock" => true,
                     "query.category_id" => [$categoryId],
                 ],
                 "count" => $count,
