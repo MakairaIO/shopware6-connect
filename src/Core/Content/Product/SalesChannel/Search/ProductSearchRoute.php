@@ -35,7 +35,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ProductSearchRoute extends AbstractProductSearchRoute
 {
-    const MAKAIRA_SORTING_MAPPING = [
+    public const MAKAIRA_SORTING_MAPPING = [
         'field' => [
             'product.name' => 'title',
             'product.cheapestPrice' => 'price',
@@ -78,8 +78,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
         $makairaFilter = [];
         foreach ($request->query as $key => $value) {
-            if (str_starts_with($key, 'filter_')) {
-                $makairaFilter[str_replace("filter_", "", $key)] = explode('|', $value);
+            if (str_starts_with((string) $key, 'filter_')) {
+                $makairaFilter[str_replace("filter_", "", (string) $key)] = explode('|', (string) $value);
             }
         }
 
@@ -141,7 +141,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
             ],
         ]);
 
-        $r =  json_decode($response->getBody()->getContents());
+        $r =  json_decode((string) $response->getBody()->getContents());
         $total = $r->product->total;
         $ids = [];
         foreach ($r->product->items as $product) {
@@ -155,7 +155,9 @@ class ProductSearchRoute extends AbstractProductSearchRoute
             $context->getContext()
         );
 
-        $newCriteria->addSorting($criteria->getSorting()[0]);
+        if ($criteria->getSorting()) {
+            $newCriteria->addSorting($criteria->getSorting()[0]);
+        }
         $newCriteria->addExtension('sortings', $criteria->getExtensions()['sortings']);
         $aggs = $criteria->getAggregations();
         $newCriteria->addFilter(new EqualsAnyFilter('productNumber', $ids));

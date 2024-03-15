@@ -35,7 +35,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[AllowDynamicProperties]
 class ProductListingRoute extends AbstractProductListingRoute
 {
-    const MAKAIRA_SORTING_MAPPING = [
+    public const MAKAIRA_SORTING_MAPPING = [
         'field' => [
             'product.name' => 'title',
             'product.cheapestPrice' => 'price',
@@ -90,8 +90,8 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         $makairaFilter = [];
         foreach ($request->query as $key => $value) {
-            if (str_starts_with($key, 'filter_')) {
-                $makairaFilter[str_replace("filter_", "", $key)] = explode('|', $value);
+            if (str_starts_with((string) $key, 'filter_')) {
+                $makairaFilter[str_replace("filter_", "", (string) $key)] = explode('|', (string) $value);
             }
         }
 
@@ -138,7 +138,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         }
         $makairaSorting = $sort ? [$sort[0][0] => $sort[0][1]] : [];
         $response = $this->fetchMakairaProductsFromCategory($catId, $count, $offset, $makairaFilter, $makairaSorting);
-        $r =  json_decode($response->getBody()->getContents());
+        $r =  json_decode((string) $response->getBody()->getContents());
         $total = $r->product->total;
         $products = $r->product->items;
         $ids = [];
