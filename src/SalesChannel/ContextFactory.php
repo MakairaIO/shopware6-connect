@@ -16,15 +16,15 @@ use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
-final class ContextFactory
+final readonly class ContextFactory
 {
     /**
      * @param EntityRepository<SalesChannelCollection> $salesChannelRepository
      */
     public function __construct(
-        private readonly EntityRepository $salesChannelRepository,
-        private readonly AbstractSalesChannelContextFactory $contextFactory,
-        private readonly PluginConfig $config,
+        private EntityRepository $salesChannelRepository,
+        private AbstractSalesChannelContextFactory $contextFactory,
+        private PluginConfig $config,
     ) {
     }
 

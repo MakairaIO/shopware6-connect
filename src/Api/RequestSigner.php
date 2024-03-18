@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\Api;
 
-final class RequestSigner
+final readonly class RequestSigner
 {
-    public function __construct(private readonly string $sharedSecret)
+    public function __construct(private string $sharedSecret)
     {
     }
 

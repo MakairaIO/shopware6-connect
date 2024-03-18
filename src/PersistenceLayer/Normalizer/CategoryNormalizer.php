@@ -13,14 +13,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-final class CategoryNormalizer implements NormalizerInterface
+final readonly class CategoryNormalizer implements NormalizerInterface
 {
     /**
      * @param SalesChannelRepository<CategoryCollection> $repository
      */
     public function __construct(
-        private readonly SalesChannelRepository $repository,
-        private readonly UrlGenerator $urlGenerator,
+        private SalesChannelRepository $repository,
+        private UrlGenerator $urlGenerator,
     ) {
     }
 
@@ -60,7 +60,7 @@ final class CategoryNormalizer implements NormalizerInterface
 
         $entity = $this->repository->search($criteria, $context)->first();
         if (null === $entity) {
-            throw NotFoundException::entity($this->getSupportedEntity(), $entityId);
+            throw NotFoundException::entity(self::getSupportedEntity(), $entityId);
         }
 
         return $entity;
@@ -76,7 +76,7 @@ final class CategoryNormalizer implements NormalizerInterface
 
     private function getHierarchy(CategoryEntity $category): string
     {
-        $hierarchy = null !== $category->getPath() ? \array_slice(explode('|', $category->getPath()), 1, -1) : [];
+        $hierarchy = null !== $category->getPath() ? \array_slice(explode('|', (string) $category->getPath()), 1, -1) : [];
         $hierarchy[] = $category->getId();
 
         return implode('//', $hierarchy);

@@ -8,19 +8,15 @@
 	{% block component_filter_panel_item_makaira %}
 		{# @var properties \Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult #}
 		{% set properties = listing.aggregations.get('filter_color') %}
-		{% if not properties.entities is empty %}
-			{% for property in properties.entities %}
-				{% sw_include '@Storefront/storefront/component/listing/filter/filter-property-select.html.twig' with {
-                                        elements: property.options,
-                                        sidebar: sidebar,
-                                        name: 'filter_color',
-                                        displayName: property.translated.name,
-                                        displayType: property.displayType,
-                                        pluginSelector: 'filter-property-select',
-                                        propertyName: property.translated.name
-                                    } %}
-			{% endfor %}
-		{% endif %}
+
+		{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
+                                    elements: properties.entities,
+                                    sidebar: sidebar,
+                                    name: 'filter_color',
+                                    displayName: "Farbe"
+                                } %}
+
+
 	{% endblock %}
 
 
@@ -52,7 +48,7 @@
 			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
                                     elements: nachhaltigkeit.entities,
                                     sidebar: sidebar,
-                                    name: 'filter_nachhaltigkeit',
+                                    name: 'filter_Nachhaltigkeit',
                                     displayName: "Nachhaltigkeit"
                                 } %}
 		{% endif %}
@@ -67,7 +63,7 @@
 			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
                                     elements: sale.entities,
                                     sidebar: sidebar,
-                                    name: 'filter_sale',
+                                    name: 'filter_Sale',
                                     displayName: "Sale"
                                 } %}
 		{% endif %}

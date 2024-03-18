@@ -11,12 +11,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-final class HistoryManager
+final readonly class HistoryManager
 {
     /**
      * @param EntityRepository<HistoryCollection> $repository
      */
-    public function __construct(private readonly EntityRepository $repository)
+    public function __construct(private EntityRepository $repository)
     {
     }
 

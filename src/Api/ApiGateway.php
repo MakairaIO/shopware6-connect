@@ -7,13 +7,13 @@ namespace Ixomo\MakairaConnect\Api;
 use Ixomo\MakairaConnect\Api\Exception\ApiException;
 use Psr\Clock\ClockInterface;
 
-final class ApiGateway implements ApiGatewayInterface
+final readonly class ApiGateway implements ApiGatewayInterface
 {
     public function __construct(
-        private readonly ApiClient $apiClient,
-        private readonly ClockInterface $clock,
-        private readonly string $customer,
-        private readonly string $instance,
+        private ApiClient $apiClient,
+        private ClockInterface $clock,
+        private string $customer,
+        private string $instance,
     ) {
     }
 

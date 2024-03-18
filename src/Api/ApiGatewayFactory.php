@@ -8,12 +8,12 @@ use Ixomo\MakairaConnect\PluginConfig;
 use Psr\Clock\ClockInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-final class ApiGatewayFactory
+final readonly class ApiGatewayFactory
 {
     public function __construct(
-        private readonly ApiClientFactory $apiClientFactory,
-        private readonly ClockInterface $clock,
-        private readonly PluginConfig $config,
+        private ApiClientFactory $apiClientFactory,
+        private ClockInterface $clock,
+        private PluginConfig $config,
     ) {
     }
 

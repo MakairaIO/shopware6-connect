@@ -18,14 +18,14 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Tag\TagEntity;
 
-final class ProductNormalizer implements NormalizerInterface
+final readonly class ProductNormalizer implements NormalizerInterface
 {
     /**
      * @param SalesChannelRepository<ProductCollection> $repository
      */
     public function __construct(
-        private readonly SalesChannelRepository $repository,
-        private readonly UrlGenerator $urlGenerator,
+        private SalesChannelRepository $repository,
+        private UrlGenerator $urlGenerator,
     ) {
     }
 
@@ -115,7 +115,7 @@ final class ProductNormalizer implements NormalizerInterface
 
         $entity = $this->repository->search($criteria, $context)->first();
         if (null === $entity) {
-            throw NotFoundException::entity($this->getSupportedEntity(), $entityId);
+            throw NotFoundException::entity(self::getSupportedEntity(), $entityId);
         }
 
         return $entity;

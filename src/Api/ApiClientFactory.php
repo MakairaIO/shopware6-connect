@@ -10,12 +10,12 @@ use Ixomo\MakairaConnect\PluginInfo;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class ApiClientFactory
+final readonly class ApiClientFactory
 {
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly PluginConfig $config,
-        private readonly PluginInfo $info,
+        private HttpClientInterface $httpClient,
+        private PluginConfig $config,
+        private PluginInfo $info,
     ) {
     }
 

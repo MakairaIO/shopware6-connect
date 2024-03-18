@@ -15,14 +15,14 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-final class EntityRepository
+final readonly class EntityRepository
 {
     /**
      * @param array<string, ShopwareEntityRepository|SalesChannelRepository> $repositories
      */
     public function __construct(
-        private readonly array $repositories,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private array $repositories,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 

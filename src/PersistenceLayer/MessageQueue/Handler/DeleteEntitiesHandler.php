@@ -11,12 +11,11 @@ use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class DeleteEntitiesHandler
+final readonly class DeleteEntitiesHandler
 {
-    public function __construct(private readonly Updater $updater, private readonly ContextFactory $contextFactory)
+    public function __construct(private Updater $updater, private ContextFactory $contextFactory)
     {
     }
-
     public function __invoke(DeleteEntities $message): void
     {
         $this->updater->delete(

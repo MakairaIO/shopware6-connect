@@ -13,11 +13,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class DeleteSubscriber implements EventSubscriberInterface
+final readonly class DeleteSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly MessageBusInterface $bus,
-        private readonly ContextFactory $contextFactory,
+        private MessageBusInterface $bus,
+        private ContextFactory $contextFactory,
     ) {
     }
 

@@ -8,9 +8,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\PluginService;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-final class PluginInfo
+final readonly class PluginInfo
 {
-    public function __construct(private readonly ParameterBagInterface $params, private readonly PluginService $pluginService)
+    public function __construct(private ParameterBagInterface $params, private PluginService $pluginService)
     {
     }
 

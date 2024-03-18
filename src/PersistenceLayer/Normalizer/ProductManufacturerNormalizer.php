@@ -12,12 +12,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-final class ProductManufacturerNormalizer implements NormalizerInterface
+final readonly class ProductManufacturerNormalizer implements NormalizerInterface
 {
     /**
      * @param EntityRepository<ProductManufacturerCollection> $repository
      */
-    public function __construct(private readonly EntityRepository $repository)
+    public function __construct(private EntityRepository $repository)
     {
     }
 
@@ -49,7 +49,7 @@ final class ProductManufacturerNormalizer implements NormalizerInterface
 
         $entity = $this->repository->search($criteria, $context->getContext())->first();
         if (null === $entity) {
-            throw NotFoundException::entity($this->getSupportedEntity(), $entityId);
+            throw NotFoundException::entity(self::getSupportedEntity(), $entityId);
         }
 
         return $entity;
