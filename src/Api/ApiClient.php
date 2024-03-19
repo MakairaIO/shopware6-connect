@@ -8,15 +8,15 @@ use Shopware\Core\Framework\Util\Random;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-final class ApiClient
+final readonly class ApiClient
 {
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly RequestSigner $requestSigner,
-        private readonly string $baseUrl,
-        private readonly string $instance,
-        private readonly string $userAgent,
-        private readonly int $timeout = 30,
+        private HttpClientInterface $httpClient,
+        private RequestSigner $requestSigner,
+        private string $baseUrl,
+        private string $instance,
+        private string $userAgent,
+        private int $timeout = 30,
     ) {
     }
 

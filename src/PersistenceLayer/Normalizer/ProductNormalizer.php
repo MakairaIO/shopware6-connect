@@ -18,14 +18,14 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Tag\TagEntity;
 
-final class ProductNormalizer implements NormalizerInterface
+final readonly class ProductNormalizer implements NormalizerInterface
 {
     /**
      * @param SalesChannelRepository<ProductCollection> $repository
      */
     public function __construct(
-        private readonly SalesChannelRepository $repository,
-        private readonly UrlGenerator $urlGenerator,
+        private SalesChannelRepository $repository,
+        private UrlGenerator $urlGenerator,
     ) {
     }
 
@@ -36,12 +36,33 @@ final class ProductNormalizer implements NormalizerInterface
     {
         $product = $this->loadEntity($entityId, $context);
 
+        $filteredCustomFields = [];
+        $customFields = $product->getCustomFields();
+        foreach ($customFields as $key => $value) {
+            if (!is_string($value)){
+                $filteredCustomFields[$key] = $value;
+                continue;
+            }
+            $filteredCustomFields[$key] = $this->removeEscapeCharacters($value);
+        }
+        $categoriesRaw = $product->getCategories()->getElements();
+        $categories = [];
+        foreach ($categoriesRaw as $category) {
+            $categories[] = [
+                'catid' => $category->getId(),
+                'title' => $category->getName(),
+                'shopid' => 1,
+                'pos' => 0,
+                'path' => ''
+            ];
+        }
         return [
             'id' => $entityId,
             'type' => null !== $product->getParentId() ? 'variant' : 'product',
             'parent' => $product->getParentId() ?? '',
             'isVariant' => null !== $product->getParentId(),
             'shop' => 1,
+            'ean' => $product->getEan() ?? '',
             'active' => (bool) $product->getActive(),
             'stock' => $product->getAvailableStock(),
             'onstock' => 0 < $product->getAvailableStock(),
@@ -52,10 +73,7 @@ final class ProductNormalizer implements NormalizerInterface
             'meta_title' => $product->getTranslation('metaTitle'),
             'meta_description' => $product->getTranslation('metaDescription'),
             'attributeStr' => $this->getGroupedOptions($product->getProperties(), $product->getOptions()),
-            'category' => $product->getCategories()->map(fn (CategoryEntity $category): array => [
-                'catid' => $category->getId(),
-                'title' => $category->getName(),
-            ]),
+            'category' => $categories,
             'width' => $product->getWidth(),
             'height' => $product->getHeight(),
             'length' => $product->getLength(),
@@ -66,7 +84,7 @@ final class ProductNormalizer implements NormalizerInterface
             'purchaseUnit' => $product->getPurchaseUnit(),
             'manufacturerid' => $product->getManufacturerId(),
             'manufacturer_title' => $product->getManufacturer()?->getName(),
-            'customFields' => $product->getCustomFields(),
+            'customFields' => $filteredCustomFields,
             'topseller' => $product->getMarkAsTopseller(),
             'searchable' => true,
             'searchkeys' => $this->getSearchKeys($product),
@@ -97,7 +115,7 @@ final class ProductNormalizer implements NormalizerInterface
 
         $entity = $this->repository->search($criteria, $context)->first();
         if (null === $entity) {
-            throw NotFoundException::entity($this->getSupportedEntity(), $entityId);
+            throw NotFoundException::entity(self::getSupportedEntity(), $entityId);
         }
 
         return $entity;
@@ -119,7 +137,6 @@ final class ProductNormalizer implements NormalizerInterface
 
         foreach ($properties ?? [] as $property) {
             $group = $property->getGroup();
-
             if (!isset($grouped[$group->getId()])) {
                 $grouped[$group->getId()] = [
                     'id' => $group->getId(),
@@ -131,12 +148,33 @@ final class ProductNormalizer implements NormalizerInterface
             $grouped[$group->getId()]['value'][] = $property->getTranslation('name');
         }
 
+
         foreach ($options ?? [] as $option) {
+            $group = $option->getGroup();
+            if (!isset($grouped[$group->getId()])) {
+                $grouped[$group->getId()] = [
+                    'id' => $group->getId(),
+                    'title' => $group->getTranslation('name'),
+                    'value' => [],
+                ];
+            }
+
+            $grouped[$group->getId()]['value'][] = $option->getTranslation('name');
+        }
+
+
+/*        foreach ($options ?? [] as $option) {
             $grouped[$option->getGroupId()]['value'] = [
                 $option->getTranslation('name'),
             ];
-        }
+        }*/
+        //dd($properties, $options, array_values($grouped));
 
         return array_values($grouped);
+    }
+
+    private function removeEscapeCharacters(string $string): string
+    {
+        return json_encode(json_decode($string, true), JSON_UNESCAPED_UNICODE);
     }
 }

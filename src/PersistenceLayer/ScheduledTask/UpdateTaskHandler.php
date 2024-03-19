@@ -46,4 +46,9 @@ final class UpdateTaskHandler extends ScheduledTaskHandler
             $this->config->setLastPersistenceLayerUpdate($now, $context->getSalesChannelId());
         }
     }
+
+    public static function getHandledMessages(): iterable
+    {
+        return [UpdateTask::class];
+    }
 }

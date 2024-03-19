@@ -13,12 +13,12 @@ use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-final class UrlGenerator
+final readonly class UrlGenerator
 {
     public function __construct(
-        private readonly SalesChannelRepository $seoUrlRepository,
-        private readonly RouterInterface $router,
-        private readonly UrlHelper $urlHelper,
+        private SalesChannelRepository $seoUrlRepository,
+        private RouterInterface $router,
+        private UrlHelper $urlHelper,
     ) {
     }
 

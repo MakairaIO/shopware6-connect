@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <container xmlns="http://symfony.com/schema/dic/services"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
         <service id="Ixomo\MakairaConnect\Api\ApiClientFactory">
@@ -144,6 +143,58 @@
             <argument key="$params" type="service" id="parameter_bag"/>
             <argument key="$pluginService" type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
         </service>
-    </services>
+        <service id="Psr\Clock\ClockInterface" class="Ixomo\MakairaConnect\Utils\SystemClock"/>
 
+        <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Search\ProductSearchRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute" decoration-priority="-1001" decoration-on-invalid="ignore">
+            <argument type="service" id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Search\ProductSearchRoute.inner" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\FilterExtractionService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\SortingMappingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\AggregationProcessingService" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" decoration-priority="-1001" decoration-on-invalid="ignore">
+            <argument type="service" id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing\ProductListingRoute.inner" />
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sales_channel.product.repository" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\FilterExtractionService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\SortingMappingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\AggregationProcessingService" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute" decoration-on-invalid="ignore">
+            <argument type="service" id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute.inner" />
+            <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" />
+            <argument type="service" id="sales_channel.product.repository" />
+            <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" />
+            <argument type="service" id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Utils\ColorLogic" class="Ixomo\MakairaConnect\Utils\ColorLogic" />
+        <service id="Ixomo\MakairaConnect\Service\FilterExtractionService" class="Ixomo\MakairaConnect\Service\FilterExtractionService" />
+        <service id="Ixomo\MakairaConnect\Service\SortingMappingService" class="Ixomo\MakairaConnect\Service\SortingMappingService" />
+        <service id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" class="Ixomo\MakairaConnect\Service\MakairaProductFetchingService">
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+        </service>
+        <service id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" class="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService">
+            <argument type="service" id="sales_channel.product.repository" />
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" />
+            <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\Service\AggregationProcessingService" class="Ixomo\MakairaConnect\Service\AggregationProcessingService">
+            <argument type="service" id="Ixomo\MakairaConnect\Utils\ColorLogic" />
+        </service>
+
+    </services>
 </container>
