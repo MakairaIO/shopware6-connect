@@ -13,8 +13,6 @@ class SortingMappingService
             'customFields.makaira_sortings_LAT_ARTICLESORT' => 'LAT_ARTICLESORT',
             'customFields.makaira_sortings_lb_neu' => 'lb_neu',
             'customFields.makaira_sortings_lb_lieferzeitsort' => 'lb_lieferzeitsort',
-            'product.newest' => 'lb_neu',
-            'product.deliverytime' => 'lb_lieferzeitsort',
         ],
         'direction' => [
             'ASC' => 'asc',
