@@ -9,11 +9,12 @@
 		{# @var properties \Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult #}
 		{% set properties = listing.aggregations.get('filter_color') %}
 
-		{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
+		{% sw_include '@Storefront/storefront/component/listing/filter/filter-color-select.html.twig' with {
                                     elements: properties.entities,
                                     sidebar: sidebar,
                                     name: 'filter_color',
-                                    displayName: "Farbe"
+                                    displayName: "Farbe",
+                                    displayType: 'color'
                                 } %}
 
 

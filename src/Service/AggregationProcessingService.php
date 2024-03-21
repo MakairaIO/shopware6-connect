@@ -41,14 +41,33 @@ class AggregationProcessingService
         }
     }
 
-    private function createCustomAggregationFilter($aggregation)
+    private function createCustomAggregationFilter($aggregation): ?EntityResult
     {
-        $options = [];
-        $color = new PropertyGroupOptionEntity();
-        $color->setName($aggregation->key);
-        $color->setId($aggregation->key);
-        $color->setTranslated(['name' => $aggregation->title]);
-        $options[] = $color;
-        return new EntityResult('filter_' . $aggregation->key, new EntityCollection($options));
+        // we use this currently for Nachhaltigkeit and Sale
+        // they have 0 or 1 as their values
+        // we only want to show if there is a 1
+        $showFilter = false;
+        foreach ($aggregation->values as $value) {
+            if ($value->key == 1) {
+                $showFilter = true;
+            }
+        }
+
+        if ($showFilter) {
+            $options = [];
+            $option = new PropertyGroupOptionEntity();
+            $option->setName($aggregation->key);
+            $option->setId($aggregation->key);
+            $option->setTranslated(['name' => $aggregation->title]);
+            $options[] = $option;
+
+            $makFilter = new EntityResult('filter_' . $aggregation->key, new EntityCollection(
+                $options
+            ));
+
+            return $makFilter;
+        }
+
+        return null;
     }
 }

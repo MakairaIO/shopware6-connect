@@ -1,8 +1,15 @@
 {% block element_product_listing_banner %}
 	{% set banners = searchResult.getExtension("makairaBanner") %}
-	{% if banners.get(loop.index) is not null %}
-		{% set banner = banners.get(loop.index) %}
+	{% if banners.get(index) is not null %}
+		{% set banner = banners.get(index) %}
 		{% set size = "col-6 col-md-4" %}
+
+
+		{# Only on search pages we have 4 columns #}
+		{% if controllerName == 'Search' %}
+			{% set size = size ~ " col-lg-3" %}
+		{% endif %}
+
 		{% if banner.type == 2 %}
 			{% set size = "col-12 col-md-8" %}
 		{% elseif banner.type == 3 %}
@@ -19,7 +26,8 @@
                   headingTag: "span",
                   content: banner.title,
               },
-              media: null,
+              media: banner.media,
+              mediaDesktop: banner.mediaDesktop,
               style: "card--overlay cms-listing-col " ~ size,
               styleVars: "",
           },

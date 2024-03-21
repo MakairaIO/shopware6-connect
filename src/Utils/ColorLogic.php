@@ -11,13 +11,6 @@ class ColorLogic
 {
     public function MakairaColorFilter($aggregation): EntityResult
     {
-        $makFilter = new PropertyGroupEntity();
-        $makFilter->setName($aggregation->key);
-        $makFilter->setId($aggregation->key);
-        $makFilter->setDisplayType('color');
-        $makFilter->setTranslated(['name' => $aggregation->title, 'position' => $aggregation->position]);
-        $makFilter->setFilterable(true);
-
         $options = [];
 
         foreach ($aggregation->values as $value) {
