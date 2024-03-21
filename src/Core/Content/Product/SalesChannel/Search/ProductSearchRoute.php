@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Search;
 
 use Ixomo\MakairaConnect\Service\AggregationProcessingService;
+use Ixomo\MakairaConnect\Service\BannerProcessingService;
 use Ixomo\MakairaConnect\Service\FilterExtractionService;
 use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
 use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
@@ -30,7 +31,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         private readonly SortingMappingService $sortingMappingService,
         private readonly ShopwareProductFetchingService $shopwareProductFetchingService,
         private readonly MakairaProductFetchingService $makairaProductFetchingService,
-        private readonly AggregationProcessingService $aggregationProcessingService
+        private readonly AggregationProcessingService $aggregationProcessingService,
+        private readonly BannerProcessingService $bannerProcessingService
     ) {
     }
 
@@ -54,9 +56,14 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = $this->aggregationProcessingService->processAggregationsFromMakairaResponse($shopwareResult, $makairaResponse);
+        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($result, $makairaResponse);
+
+
         $this->eventDispatcher->dispatch(new ProductSearchCriteriaEvent($request, $criteria, $context), ProductEvents::PRODUCT_SEARCH_CRITERIA);
 
         $finalResult = ProductListingResult::createFrom($result);
+
+
         $this->eventDispatcher->dispatch(new ProductSearchResultEvent($request, $finalResult, $context), ProductEvents::PRODUCT_SEARCH_RESULT);
 
         return new ProductSearchRouteResponse($finalResult);

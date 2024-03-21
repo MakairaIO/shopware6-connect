@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing;
 
 use Ixomo\MakairaConnect\Service\AggregationProcessingService;
+use Ixomo\MakairaConnect\Service\BannerProcessingService;
 use Ixomo\MakairaConnect\Service\FilterExtractionService;
 use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
 use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
@@ -39,7 +40,8 @@ class ProductListingRoute extends AbstractProductListingRoute
         private readonly SortingMappingService $sortingMappingService,
         private readonly MakairaProductFetchingService $makairaProductFetchingService,
         private readonly ShopwareProductFetchingService $shopwareProductFetchingService,
-        private readonly AggregationProcessingService $aggregationProcessingService
+        private readonly AggregationProcessingService $aggregationProcessingService,
+        private readonly BannerProcessingService $bannerProcessingService
     ) {
         $this->decorated = $decorated;
         $this->categoryRepository = $categoryRepository;
@@ -67,7 +69,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         $makairaFilter = $this->filterExtractionService->extractMakairaFiltersFromRequest($request);
 
         $category = $this->fetchCategory($categoryId, $context);
-        if (isset($category->getCustomFields()['loberonCatId'])){
+        if (isset($category->getCustomFields()['loberonCatId'])) {
             $catId = $category->getCustomFields()['loberonCatId'];
         } else {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
@@ -81,6 +83,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = $this->aggregationProcessingService->processAggregationsFromMakairaResponse($shopwareResult, $makairaResponse);
+        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($result, $makairaResponse);
 
 
         /** @var ProductListingResult $result */

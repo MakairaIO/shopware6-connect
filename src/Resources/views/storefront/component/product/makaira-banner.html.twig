@@ -1,0 +1,28 @@
+{% block element_product_listing_banner %}
+	{% set banners = searchResult.getExtension("makairaBanner") %}
+	{% if banners.get(loop.index) is not null %}
+		{% set banner = banners.get(loop.index) %}
+		{% set size = "col-6 col-md-4" %}
+		{% if banner.type == 2 %}
+			{% set size = "col-12 col-md-8" %}
+		{% elseif banner.type == 3 %}
+			{% set size = "col-12" %}
+		{% endif %}
+
+		{% sw_include '@Storefront/storefront/component/card.html.twig' with {
+          card: {
+              callToAction: {
+                  url: banner.link,},
+              class: 'cms-element-loberon-card-overlay',
+              content: banner.description,
+              headline: {
+                  headingTag: "span",
+                  content: banner.title,
+              },
+              media: null,
+              style: "card--overlay cms-listing-col " ~ size,
+              styleVars: "",
+          },
+      } %}
+	{% endif %}
+{% endblock %}
