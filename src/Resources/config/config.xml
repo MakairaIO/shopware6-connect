@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
         <title>Makaira API</title>
         <title lang="de-DE">Makaira API</title>
@@ -26,6 +25,20 @@
             <label lang="de-DE">Instanz</label>
             <placeholder>e.g. live</placeholder>
             <placeholder lang="de-DE">z.B. live</placeholder>
+        </input-field>
+        <input-field type="text">
+            <name>shopId</name>
+            <label>Shop ID</label>
+            <label lang="de-DE">Shop ID</label>
+            <placeholder>e.g. 1</placeholder>
+            <placeholder lang="de-DE">z.B. 1</placeholder>
+        </input-field>
+        <input-field type="text">
+            <name>language</name>
+            <label>Language</label>
+            <label lang="de-DE">Sprache</label>
+            <placeholder>e.g. 'de'</placeholder>
+            <placeholder lang="de-DE">z.B. 'de'</placeholder>
         </input-field>
         <input-field type="int">
             <name>apiTimeout</name>

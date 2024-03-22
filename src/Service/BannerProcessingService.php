@@ -2,17 +2,23 @@
 
 namespace Ixomo\MakairaConnect\Service;
 
+use Ixomo\MakairaConnect\PluginConfig;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Struct\ArrayEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class BannerProcessingService
 {
-    public function __construct()
+    public function __construct(private readonly PluginConfig $config)
     {
     }
+    public function getBaseMediaUrl($context, $mediaUrl)
+    {
+        return "https://" . $this->config->getApiCustomer($context->getSalesChannelId) . ".makaira.media/" . $mediaUrl;
+    }
 
-    public function processBannersFromMakairaResponse(EntitySearchResult $shopwareResult, $makairaResponse): EntitySearchResult
+    public function processBannersFromMakairaResponse(SalesChannelContext $context, EntitySearchResult $shopwareResult, $makairaResponse): EntitySearchResult
     {
         $banner = array();
 
@@ -28,14 +34,14 @@ class BannerProcessingService
                 if ($item->imageDesktop) {
                     $mediaDesktop =  new MediaEntity();
                     $mediaDesktop->setAlt($item->title);
-                    $mediaDesktop->setUrl("https://loberon.makaira.media/" . $item->imageDesktop);
+                    $mediaDesktop->setUrl($this->getBaseMediaUrl($context, $item->imageDesktop));
                     $item->mediaDesktop = $mediaDesktop;
                 }
 
                 if ($item->imageMobile) {
                     $media =  new MediaEntity();
                     $media->setAlt($item->title);
-                    $media->setUrl("https://loberon.makaira.media/" . $item->imageMobile);
+                    $media->setUrl($this->getBaseMediaUrl($context, $item->imageMobile));
                     $item->media = $media;
                 }
 

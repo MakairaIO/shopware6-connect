@@ -78,7 +78,7 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
 
 
         $query = $request->query->get('search');
-        $makairaResponse = $this->makairaProductFetchingService->fetchSuggestionsFromMakaira($query);
+        $makairaResponse = $this->makairaProductFetchingService->fetchSuggestionsFromMakaira($context, $query);
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = ProductListingResult::createFrom($shopwareResult);

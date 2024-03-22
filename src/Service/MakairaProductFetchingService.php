@@ -5,28 +5,26 @@ namespace Ixomo\MakairaConnect\Service;
 use GuzzleHttp\Client;
 use Ixomo\MakairaConnect\PluginConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 #[\AllowDynamicProperties]
 class MakairaProductFetchingService
 {
     private Client $client;
-    private string $searchURL;
-    private string $instance;
+
 
     public function __construct(private readonly PluginConfig $config)
     {
         $this->client = new Client();
-        $this->searchURL = $this->config->getApiBaseUrl() . '/search/public';
-        $this->instance = $this->config->getApiInstance();
     }
 
-    public function fetchProductsFromMakaira(string $query, Criteria $criteria, array $makairaSorting, array $makairaFilter)
+    public function fetchProductsFromMakaira(SalesChannelContext $context, string $query, Criteria $criteria, array $makairaSorting, array $makairaFilter)
     {
-        return $this->makeRequest([
+        return $this->makeRequest($context, [
             'isSearch' => true,
             'enableAggregations' => true,
             'aggregations' => $makairaFilter,
-            'constraints' => $this->getDefaultConstraints(),
+            'constraints' => $this->getDefaultConstraints($context),
             'searchPhrase' => $query,
             'count' => $criteria->getLimit(),
             'offset' => $criteria->getOffset(),
@@ -34,12 +32,12 @@ class MakairaProductFetchingService
         ]);
     }
 
-    public function fetchMakairaProductsFromCategory(string $categoryId, Criteria $criteria, array $filter, array $sorting)
+    public function fetchMakairaProductsFromCategory(SalesChannelContext $context, string $categoryId, Criteria $criteria, array $filter, array $sorting)
     {
-        return $this->makeRequest([
+        return $this->makeRequest($context, [
             'isSearch' => false,
             'enableAggregations' => true,
-            'constraints' => array_merge($this->getDefaultConstraints(), ['query.category_id' => [$categoryId]]),
+            'constraints' => array_merge($this->getDefaultConstraints($context), ['query.category_id' => [$categoryId]]),
             'count' => $criteria->getLimit(),
             'offset' => $criteria->getOffset(),
             'searchPhrase' => '',
@@ -49,33 +47,41 @@ class MakairaProductFetchingService
         ]);
     }
 
-    public function fetchSuggestionsFromMakaira($query)
+    public function fetchSuggestionsFromMakaira(SalesChannelContext $context, $query)
     {
-        return $this->makeRequest([
+        return $this->makeRequest($context, [
             'isSearch' => true,
             'enableAggregations' => true,
-            'constraints' => $this->getDefaultConstraints(),
+            'constraints' => $this->getDefaultConstraints($context),
             'searchPhrase' => $query,
             'count' => '10',
         ]);
     }
 
-    private function makeRequest(array $payload): mixed
+    private function makeRequest(SalesChannelContext $context, array $payload): mixed
     {
-        $response = $this->client->request('POST', $this->searchURL, [
+
+        $searchURL = $this->config->getApiBaseUrl($context->getSalesChannelId()) . '/search/public';
+        $instance = $this->config->getApiInstance($context->getSalesChannelId());
+
+
+        $response = $this->client->request('POST', $searchURL, [
             'json' => $payload,
-            'headers' => ['X-Makaira-Instance' => $this->instance],
+            'headers' => ['X-Makaira-Instance' => $instance],
         ]);
 
         return $this->handleResponse($response);
     }
 
-    private function getDefaultConstraints(): array
+    private function getDefaultConstraints(SalesChannelContext $context): array
     {
+        $language = $this->config->getLanguage($context->getSalesChannelId());
+        $shopId = $this->config->getShopId($context->getSalesChannelId());
+
         return [
-            'query.shop_id' => '3',
+            'query.shop_id' => $shopId,
             'query.use_stock' => true,
-            'query.language' => 'at',
+            'query.language' => $language,
         ];
     }
 

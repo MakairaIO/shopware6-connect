@@ -20,7 +20,9 @@ final readonly class PluginConfig
             '' !== (string) $this->getApiBaseUrl($salesChannelId)
             && '' !== (string) $this->getApiSharedSecret($salesChannelId)
             && '' !== (string) $this->getApiCustomer($salesChannelId)
-            && '' !== (string) $this->getApiInstance($salesChannelId);
+            && '' !== (string) $this->getApiInstance($salesChannelId)
+            && '' !== (string) $this->getShopId($salesChannelId)
+            && '' !== (string) $this->getLanguage($salesChannelId);
     }
 
     public function getApiBaseUrl(string $salesChannelId = null): ?string
@@ -46,6 +48,16 @@ final readonly class PluginConfig
     public function getApiInstance(string $salesChannelId = null): ?string
     {
         return $this->get('apiInstance', $salesChannelId);
+    }
+
+    public function getShopId(string $salesChannelId = null): ?string
+    {
+        return $this->get('shopId', $salesChannelId);
+    }
+
+    public function getLanguage(string $salesChannelId = null): ?string
+    {
+        return $this->get('language', $salesChannelId);
     }
 
     public function getLastPersistenceLayerUpdate(string $salesChannelId = null): ?\DateTimeInterface
