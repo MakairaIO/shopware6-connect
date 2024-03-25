@@ -78,12 +78,12 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         $makairaSorting = $this->sortingMappingService->mapSortingCriteria($criteria);
 
-        $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($catId, $criteria, $makairaFilter, $makairaSorting);
+        $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $catId, $criteria, $makairaFilter, $makairaSorting);
 
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = $this->aggregationProcessingService->processAggregationsFromMakairaResponse($shopwareResult, $makairaResponse);
-        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($result, $makairaResponse);
+        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($context, $result, $makairaResponse);
 
 
         /** @var ProductListingResult $result */

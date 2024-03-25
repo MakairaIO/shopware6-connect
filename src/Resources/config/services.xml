@@ -199,6 +199,7 @@
             <argument type="service" id="Ixomo\MakairaConnect\Utils\ColorLogic" />
         </service>
         <service id="Ixomo\MakairaConnect\Service\BannerProcessingService" class="Ixomo\MakairaConnect\Service\BannerProcessingService">
+            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
         </service>
 
         <service id="Ixomo\MakairaConnect\Core\Content\Category\SalesChannel\CachedCategoryRoute" decorates="Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute" decoration-on-invalid="ignore">
