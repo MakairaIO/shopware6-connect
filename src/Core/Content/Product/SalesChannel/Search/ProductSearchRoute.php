@@ -51,12 +51,12 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
         $makairaSorting = $this->sortingMappingService->mapSortingCriteria($criteria);
 
-        $makairaResponse = $this->makairaProductFetchingService->fetchProductsFromMakaira($query, $criteria, $makairaSorting, $makairaFilter);
+        $makairaResponse = $this->makairaProductFetchingService->fetchProductsFromMakaira($context, $query, $criteria, $makairaSorting, $makairaFilter);
 
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = $this->aggregationProcessingService->processAggregationsFromMakairaResponse($shopwareResult, $makairaResponse);
-        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($result, $makairaResponse);
+        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($context, $result, $makairaResponse);
 
 
         $this->eventDispatcher->dispatch(new ProductSearchCriteriaEvent($request, $criteria, $context), ProductEvents::PRODUCT_SEARCH_CRITERIA);

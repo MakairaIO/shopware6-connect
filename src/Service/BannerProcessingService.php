@@ -15,7 +15,7 @@ class BannerProcessingService
     }
     public function getBaseMediaUrl($context, $mediaUrl)
     {
-        return "https://" . $this->config->getApiCustomer($context->getSalesChannelId) . ".makaira.media/" . $mediaUrl;
+        return "https://" . $this->config->getApiCustomer($context->getSalesChannelId()) . ".makaira.media/" . $mediaUrl;
     }
 
     public function processBannersFromMakairaResponse(SalesChannelContext $context, EntitySearchResult $shopwareResult, $makairaResponse): EntitySearchResult
