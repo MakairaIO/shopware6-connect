@@ -1,0 +1,50 @@
+{% sw_extends '@Storefront/storefront/layout/header/search-suggest.html.twig' %}
+
+{% block layout_search_suggest_container %}
+
+
+	<style></style>
+	<div class="search-suggest-container">
+		<div class="search-suggest-container-inner">
+			<h3>{{"general.products"|trans|sw_sanitize}}</h3>
+			<ul class="search-suggest-list">
+				{% block layout_search_suggest_results %}
+					{{ parent() }}
+				{% endblock %}
+
+
+				{% block layout_search_suggest_result_total %}
+					{{ parent() }}
+
+				{% endblock %}
+			</ul>
+		</div>
+		<div class="search-suggest-container-inner">
+			<h3>{{"general.categories"|trans|sw_sanitize}}</h3>
+			<ul class="search-suggest-list">
+				{% for category in page.searchResult.extensions.makairaCategories.all %}
+					<li class=" js-result">
+						<a href="{{category.fields.url}}" title="{{ category.fields.category_title }}" class="search-suggest-product-link">
+							<div class="row align-items-center {{ gridNoGuttersClass }}">
+								{% if category.fields.category_parent %}
+									<span class="search-suggest-category-parent">
+										{% autoescape false %}
+											{{category.fields.category_parent}}<span class="search-suggest-category-spacer">/</span>
+										{% endautoescape %}
+
+									</span>
+								{% endif %}
+								<span>
+									{% autoescape false %}
+										{{category.fields.category_title}}
+									{% endautoescape %}
+								</span>
+							</div>
+						</a>
+					</li>
+				{% endfor %}
+
+			</ul>
+		</div>
+	</div>
+{% endblock %}

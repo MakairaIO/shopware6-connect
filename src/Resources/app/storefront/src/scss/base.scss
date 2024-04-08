@@ -1,0 +1,22 @@
+.search-suggest-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex-direction: row;
+  width: 800px !important;
+  transform: none;
+  left: 0;
+  gap: 2rem;
+}
+
+.search-suggest-category-parent {
+  opacity: 0.5;
+}
+
+.search-suggest-list {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.search-suggest-category-spacer {
+  margin: 0 0.2rem;
+}
