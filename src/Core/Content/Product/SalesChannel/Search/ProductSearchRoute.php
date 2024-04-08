@@ -19,6 +19,7 @@ use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -53,6 +54,13 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
         $makairaResponse = $this->makairaProductFetchingService->fetchProductsFromMakaira($context, $query, $criteria, $makairaSorting, $makairaFilter);
 
+        $redirectUrl = $this->checkForSearchRedirect($makairaResponse);
+
+        if ($redirectUrl) {
+            $redirectResponse = new RedirectResponse($redirectUrl, 302);
+            $redirectResponse->send();
+        }
+
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = $this->aggregationProcessingService->processAggregationsFromMakairaResponse($shopwareResult, $makairaResponse);
@@ -74,5 +82,22 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         if (!$request->get('search')) {
             throw RoutingException::missingRequestParameter('search');
         }
+    }
+
+
+    private function checkForSearchRedirect($makairaResponse): ?string
+    {
+
+        $redirects = isset($makairaResponse->searchredirect) ? $makairaResponse->searchredirect->items : [];
+
+        if (count($redirects) > 0) {
+            $targetUrl = $redirects[0]->fields->targetUrl;
+
+            if ($targetUrl) {
+                return $targetUrl;
+            }
+        }
+
+        return null;
     }
 }
