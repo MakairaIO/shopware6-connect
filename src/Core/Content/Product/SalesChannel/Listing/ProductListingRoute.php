@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing;
 
+use Ixomo\MakairaConnect\Exception\NoDataException;
 use Ixomo\MakairaConnect\Service\AggregationProcessingService;
 use Ixomo\MakairaConnect\Service\BannerProcessingService;
 use Ixomo\MakairaConnect\Service\FilterExtractionService;
 use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
 use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
 use Ixomo\MakairaConnect\Service\SortingMappingService;
+use League\Pipeline\Pipeline;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
@@ -41,7 +44,8 @@ class ProductListingRoute extends AbstractProductListingRoute
         private readonly MakairaProductFetchingService $makairaProductFetchingService,
         private readonly ShopwareProductFetchingService $shopwareProductFetchingService,
         private readonly AggregationProcessingService $aggregationProcessingService,
-        private readonly BannerProcessingService $bannerProcessingService
+        private readonly BannerProcessingService $bannerProcessingService,
+        private readonly LoggerInterface $logger,
     ) {
         $this->decorated = $decorated;
         $this->categoryRepository = $categoryRepository;
@@ -74,16 +78,28 @@ class ProductListingRoute extends AbstractProductListingRoute
         } else {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
+
         $streamId = $this->extendCriteria($context, $criteria, $category);
 
-        $makairaSorting = $this->sortingMappingService->mapSortingCriteria($criteria);
+        try {
+            $makairaSorting = $this->sortingMappingService->mapSortingCriteria($criteria);
 
-        $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $catId, $criteria, $makairaFilter, $makairaSorting);
+            $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $catId, $criteria, $makairaFilter, $makairaSorting);
+
+            if (is_null($makairaResponse)) {
+                throw new NoDataException('Keine Daten oder fehlerhaft vom Makaira Server.');
+            }
+        } catch (\Exception $exception) {
+            $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+            return $this->decorated->load($categoryId, $request, $context, $criteria);
+        }
 
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
-        $result = $this->aggregationProcessingService->processAggregationsFromMakairaResponse($shopwareResult, $makairaResponse);
-        $result = $this->bannerProcessingService->processBannersFromMakairaResponse($context, $result, $makairaResponse);
+        $result = (new Pipeline())
+            ->pipe(fn($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
+            ->pipe(fn($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
+            ->process($shopwareResult);
 
 
         /** @var ProductListingResult $result */

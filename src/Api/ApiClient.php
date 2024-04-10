@@ -27,7 +27,7 @@ final readonly class ApiClient
         $headers = array_merge([
             'User-Agent' => $this->userAgent,
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/json; charset=UTF-8',
             'X-Makaira-Instance' => $this->instance,
         ], $this->getAuthenticationHeaders($body));
 
@@ -36,6 +36,7 @@ final readonly class ApiClient
             'headers' => $headers,
             'query' => $query,
             'body' => $body,
+            'http_version' => '1.1',
             'timeout' => $this->timeout,
         ]);
     }

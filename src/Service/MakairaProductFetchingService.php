@@ -3,51 +3,62 @@
 namespace Ixomo\MakairaConnect\Service;
 
 use GuzzleHttp\Client;
+use Ixomo\MakairaConnect\Api\ApiClient;
+use Ixomo\MakairaConnect\Api\ApiClientFactory;
+use Ixomo\MakairaConnect\Events\ModifierQueryRequestEvent;
 use Ixomo\MakairaConnect\PluginConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 #[\AllowDynamicProperties]
 class MakairaProductFetchingService
 {
-    private Client $client;
+    private ApiClient $client;
 
+    public function __construct(
+        private readonly PluginConfig $config,
+        private readonly ApiClientFactory $apiClientFactory,
+        private readonly EventDispatcherInterface $dispatcher,
+    ) {}
 
-    public function __construct(private readonly PluginConfig $config)
+    public function fetchProductsFromMakaira(SalesChannelContext $context, string $query, Criteria $criteria, array $makairaSorting, array $makairaFilter): ?\stdClass
     {
-        $this->client = new Client();
+        return $this->makeRequest($context, $this->dispatchEvent(
+            ModifierQueryRequestEvent::NAME_SEARCH,
+            [
+                'isSearch' => true,
+                'enableAggregations' => true,
+                'aggregations' => $makairaFilter,
+                'constraints' => $this->getDefaultConstraints($context),
+                'searchPhrase' => $query,
+                'count' => $criteria->getLimit(),
+                'offset' => $criteria->getOffset(),
+                'sorting' => $makairaSorting,
+            ])
+        );
     }
 
-    public function fetchProductsFromMakaira(SalesChannelContext $context, string $query, Criteria $criteria, array $makairaSorting, array $makairaFilter)
+    public function fetchMakairaProductsFromCategory(SalesChannelContext $context, string $categoryId, Criteria $criteria, array $filter, array $sorting): ?\stdClass
     {
-        return $this->makeRequest($context, [
-            'isSearch' => true,
-            'enableAggregations' => true,
-            'aggregations' => $makairaFilter,
-            'constraints' => $this->getDefaultConstraints($context),
-            'searchPhrase' => $query,
-            'count' => $criteria->getLimit(),
-            'offset' => $criteria->getOffset(),
-            'sorting' => $makairaSorting,
-        ]);
+        return $this->makeRequest($context, $this->dispatchEvent(
+            ModifierQueryRequestEvent::NAME_SEARCH,
+            [
+                'isSearch' => false,
+                'enableAggregations' => true,
+                'constraints' => array_merge($this->getDefaultConstraints($context), ['query.category_id' => [$categoryId]]),
+                'count' => $criteria->getLimit(),
+                'offset' => $criteria->getOffset(),
+                'searchPhrase' => '',
+                'aggregations' => $filter,
+                'sorting' => $sorting,
+                'customFilter' => [],
+            ])
+        );
     }
 
-    public function fetchMakairaProductsFromCategory(SalesChannelContext $context, string $categoryId, Criteria $criteria, array $filter, array $sorting)
-    {
-        return $this->makeRequest($context, [
-            'isSearch' => false,
-            'enableAggregations' => true,
-            'constraints' => array_merge($this->getDefaultConstraints($context), ['query.category_id' => [$categoryId]]),
-            'count' => $criteria->getLimit(),
-            'offset' => $criteria->getOffset(),
-            'searchPhrase' => '',
-            'aggregations' => $filter,
-            'sorting' => $sorting,
-            'customFilter' => [],
-        ]);
-    }
-
-    public function fetchSuggestionsFromMakaira(SalesChannelContext $context, $query)
+    public function fetchSuggestionsFromMakaira(SalesChannelContext $context, $query): ?\stdClass
     {
         return $this->makeRequest($context, [
             'isSearch' => true,
@@ -58,19 +69,23 @@ class MakairaProductFetchingService
         ]);
     }
 
-    private function makeRequest(SalesChannelContext $context, array $payload): mixed
+    private function makeRequest(SalesChannelContext $context, array $payload): ?\stdClass
     {
+        $searchURL = $this->config->getApiBaseUrl($context->getSalesChannelId()) . '/search/';
 
-        $searchURL = $this->config->getApiBaseUrl($context->getSalesChannelId()) . '/search/public';
-        $instance = $this->config->getApiInstance($context->getSalesChannelId());
+        /** loberon */
+        lbLoggerBrowser()->notice('Makaira request: ' . $payload['searchPhrase'] ?? '', compact('searchURL', 'payload'));
+        /** end loberon */
 
+        $http = $this->getClient($context)->request(method: 'POST', url: $searchURL, data: $payload);
+        $handleResponse = $this->handleResponse($http);
 
-        $response = $this->client->request('POST', $searchURL, [
-            'json' => $payload,
-            'headers' => ['X-Makaira-Instance' => $instance],
-        ]);
+        /** loberon */
+        $row = $http->getContent();
+        lbLoggerBrowser()->notice('Makaira response', compact('row', 'handleResponse'));
+        /** end loberon */
 
-        return $this->handleResponse($response);
+        return $handleResponse;
     }
 
     private function getDefaultConstraints(SalesChannelContext $context): array
@@ -85,8 +100,24 @@ class MakairaProductFetchingService
         ];
     }
 
-    private function handleResponse($response): mixed
+    private function handleResponse(ResponseInterface $response): ?\stdClass
     {
-        return json_decode((string) $response->getBody()->getContents(), false);
+        return json_decode((string) $response->getContent(), false);
+    }
+
+    private function dispatchEvent($eventName, array $query): array
+    {
+        $event = new ModifierQueryRequestEvent($query);
+        $this->dispatcher->dispatch(
+            event: $event,
+            eventName: $eventName
+        );
+
+        return $event->getQuery()->getArrayCopy();
+    }
+
+    private function getClient(SalesChannelContext $context): ApiClient
+    {
+        return $this->client ??= $this->apiClientFactory->create($context);
     }
 }

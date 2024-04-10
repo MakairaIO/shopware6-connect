@@ -154,7 +154,7 @@
             <argument type="service" id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" />
             <argument type="service" id="Ixomo\MakairaConnect\Service\AggregationProcessingService" />
             <argument type="service" id="Ixomo\MakairaConnect\Service\BannerProcessingService" />
-
+            <argument type="service" id="monolog.logger.http_client" />
         </service>
 
         <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" decoration-priority="-1001" decoration-on-invalid="ignore">
@@ -169,6 +169,7 @@
             <argument type="service" id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" />
             <argument type="service" id="Ixomo\MakairaConnect\Service\AggregationProcessingService" />
             <argument type="service" id="Ixomo\MakairaConnect\Service\BannerProcessingService" />
+            <argument type="service" id="monolog.logger.http_client" />
         </service>
 
         <service id="Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute" decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute" decoration-on-invalid="ignore">
@@ -181,13 +182,16 @@
             <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition" />
             <argument type="service" id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" />
             <argument type="service" id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" />
+            <argument type="service" id="monolog.logger.http_client" />
         </service>
 
         <service id="Ixomo\MakairaConnect\Utils\ColorLogic" class="Ixomo\MakairaConnect\Utils\ColorLogic" />
         <service id="Ixomo\MakairaConnect\Service\FilterExtractionService" class="Ixomo\MakairaConnect\Service\FilterExtractionService" />
         <service id="Ixomo\MakairaConnect\Service\SortingMappingService" class="Ixomo\MakairaConnect\Service\SortingMappingService" />
         <service id="Ixomo\MakairaConnect\Service\MakairaProductFetchingService" class="Ixomo\MakairaConnect\Service\MakairaProductFetchingService">
-            <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+          <argument type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
+          <argument type="service" id="Ixomo\MakairaConnect\Api\ApiClientFactory"/>
+          <argument type="service" id="event_dispatcher"/>
         </service>
         <service id="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService" class="Ixomo\MakairaConnect\Service\ShopwareProductFetchingService">
             <argument type="service" id="sales_channel.product.repository" />

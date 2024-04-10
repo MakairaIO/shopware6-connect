@@ -6,6 +6,7 @@ namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Suggest;
 
 use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
 use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\Events\ProductSearchCriteriaEvent;
 use Shopware\Core\Content\Product\Events\ProductSuggestCriteriaEvent;
@@ -24,7 +25,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
-use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +42,8 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
         SalesChannelRepository $salesChannelProductRepository,
         ProductDefinition $definition,
         private readonly MakairaProductFetchingService $makairaProductFetchingService,
-        private readonly ShopwareProductFetchingService $shopwareProductFetchingService
+        private readonly ShopwareProductFetchingService $shopwareProductFetchingService,
+        private readonly LoggerInterface $logger,
     ) {
         $this->decorated = $decorated;
         $this->eventDispatcher = $eventDispatcher;
@@ -79,15 +80,17 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
 
 
         $query = $request->query->get('search');
-        $makairaResponse = $this->makairaProductFetchingService->fetchSuggestionsFromMakaira($context, $query);
+
+        try {
+            $makairaResponse = $this->makairaProductFetchingService->fetchSuggestionsFromMakaira($context, $query);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+            return $this->decorated->load($request, $context, $criteria);
+        }
+
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = ProductListingResult::createFrom($shopwareResult);
-
-        $categories = $makairaResponse->category->items ?? [];
-        $categoriesEntity = new ArrayEntity(array_splice($categories, 0, 10));
-        $result->addExtension('makairaCategories', $categoriesEntity);
-
         $this->eventDispatcher->dispatch(
             new ProductSuggestResultEvent($request, $result, $context),
             ProductEvents::PRODUCT_SUGGEST_RESULT

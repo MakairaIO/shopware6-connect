@@ -18,7 +18,11 @@ class BannerProcessingService
         return "https://" . $this->config->getApiCustomer($context->getSalesChannelId()) . ".makaira.media/" . $mediaUrl;
     }
 
-    public function processBannersFromMakairaResponse(SalesChannelContext $context, EntitySearchResult $shopwareResult, $makairaResponse): EntitySearchResult
+    public function processBannersFromMakairaResponse(
+        EntitySearchResult $shopwareResult,
+        \StdClass $makairaResponse,
+        SalesChannelContext $context,
+    ): EntitySearchResult
     {
         $banner = array();
 

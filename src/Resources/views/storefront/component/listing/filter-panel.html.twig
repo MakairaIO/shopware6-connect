@@ -1,75 +1,94 @@
 {% sw_extends '@Storefront/storefront/component/listing/filter-panel.html.twig' %}
 
 
-{# Render order differently to Shopware (price before everything else) #}
-{% block component_filter_panel_items %}
+{# Add a container class for makaira js #}
+{# Render filter-items order differently to Shopware (price before everything else) #}
+{% block component_filter_panel_items_container %}
+    {% block component_filter_panel_items_sorting %}
+    <div class="filter-panel-sorting-container js-makaira-filter-panel-sorting">
+        {{ parent() }}
+    </div>
+    {% endblock %}
+
+    {% block component_filter_panel_items %}
+    <div class="filter-panel-items-container js-makaira-filter-panel-items">
 
 
-	{% block component_filter_panel_item_makaira %}
-		{# @var properties \Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult #}
-		{% set properties = listing.aggregations.get('filter_color') %}
+        {% block component_filter_panel_item_makaira %}
+            {# @var properties \Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult #}
+            {% set properties = listing.aggregations.get('filter_color') %}
 
-		{% sw_include '@Storefront/storefront/component/listing/filter/filter-color-select.html.twig' with {
-                                    elements: properties.entities,
-                                    sidebar: sidebar,
-                                    name: 'filter_color',
-                                    displayName: "Farbe",
-                                    displayType: 'color'
-                                } %}
-
-
-	{% endblock %}
+            {% sw_include '@Storefront/storefront/component/listing/filter/filter-color-select.html.twig' with {
+                                        elements: properties.entities,
+                                        sidebar: sidebar,
+                                        name: 'filter_color',
+                                        displayName: "Farbe",
+                                        displayType: 'color'
+                                    } %}
 
 
-	{% block component_filter_panel_item_price %}
-		{% set price = listing.aggregations.get('filter_price') %}
-
-		{% if price.min !== null and price.max !== null %}
-			{# '@deprecated tag:v6.5.0 - Variable `price` will no longer be required by filter-range.html.twig - Use `minInputValue` and `maxInputValue` instead.' #}
-			{% sw_include '@Storefront/storefront/component/listing/filter/filter-range.html.twig' with {
-                                    price: price,
-                                    sidebar: sidebar,
-                                    name: 'price',
-                                    minKey: 'min-price',
-                                    maxKey: 'max-price',
-                                    lowerBound: 0,
-                                    displayName: 'listing.filterPriceDisplayName'|trans|sw_sanitize,
-                                    minInputValue: 0,
-                                    maxInputValue: price.max,
-                                } %}
-		{% endif %}
-	{% endblock %}
-
-	{% block component_filter_panel_item_nachhaltigkeit %}
+        {% endblock %}
 
 
-		{% set nachhaltigkeit = listing.aggregations.get('filter_Nachhaltigkeit') %}
-		{% if not nachhaltigkeit.entities is empty %}
+        {% block component_filter_panel_item_price %}
+            {% set price = listing.aggregations.get('filter_price') %}
 
-			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
-                                    elements: nachhaltigkeit.entities,
-                                    sidebar: sidebar,
-                                    name: 'filter_Nachhaltigkeit',
-                                    displayName: "Nachhaltigkeit"
-                                } %}
-		{% endif %}
-
-	{% endblock %}
-
-
-	{% block component_filter_panel_item_sale %}
-		{% set sale = listing.aggregations.get('filter_Sale') %}
-		{% if not sale.entities is empty %}
-
-			{% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
-                                    elements: sale.entities,
-                                    sidebar: sidebar,
-                                    name: 'filter_Sale',
-                                    displayName: "Sale"
-                                } %}
-		{% endif %}
-
-	{% endblock %}
+            {% if price.min !== null and price.max !== null %}
+                {# '@deprecated tag:v6.5.0 - Variable `price` will no longer be required by filter-range.html.twig - Use `minInputValue` and `maxInputValue` instead.' #}
+                {% sw_include '@Storefront/storefront/component/listing/filter/filter-range.html.twig' with {
+                                        price: price,
+                                        sidebar: sidebar,
+                                        name: 'price',
+                                        minKey: 'min-price',
+                                        maxKey: 'max-price',
+                                        lowerBound: 0,
+                                        displayName: 'listing.filterPriceDisplayName'|trans|sw_sanitize,
+                                        minInputValue: 0,
+                                        maxInputValue: price.max,
+                                    } %}
+            {% endif %}
+        {% endblock %}
 
 
+        {% block component_filter_panel_item_nachhaltigkeit %}
+
+
+            {% set nachhaltigkeit = listing.aggregations.get('filter_Nachhaltigkeit') %}
+            {% if not nachhaltigkeit.entities is empty %}
+
+                {% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
+                                        elements: nachhaltigkeit.entities,
+                                        sidebar: sidebar,
+                                        name: 'filter_Nachhaltigkeit',
+                                        displayName: "Nachhaltigkeit"
+                                    } %}
+            {% endif %}
+
+        {% endblock %}
+
+
+        {% block component_filter_panel_item_sale %}
+            {% set sale = listing.aggregations.get('filter_Sale') %}
+            {% if not sale.entities is empty %}
+
+                {% sw_include '@Storefront/storefront/component/listing/filter/filter-multi-select.html.twig' with {
+                                        elements: sale.entities,
+                                        sidebar: sidebar,
+                                        name: 'filter_Sale',
+                                        displayName: "Sale"
+                                    } %}
+            {% endif %}
+
+        {% endblock %}
+
+    </div>
+    {% endblock %}
+
+{% endblock %}
+
+{# Add a container class for makaira js #}
+{% block component_filter_panel_active_container %}
+<div class="filter-panel-active-container js-makaira-filter-panel-active">
+    {% block component_filter_panel_active_container_inner %}{% endblock %}
+</div>
 {% endblock %}

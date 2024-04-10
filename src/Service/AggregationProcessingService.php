@@ -5,6 +5,7 @@ namespace Ixomo\MakairaConnect\Service;
 use Ixomo\MakairaConnect\Utils\ColorLogic;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -16,7 +17,10 @@ class AggregationProcessingService
     ) {
     }
 
-    public function processAggregationsFromMakairaResponse(EntitySearchResult $shopwareResult, $makairaResponse)
+    public function processAggregationsFromMakairaResponse(
+        EntitySearchResult $shopwareResult,
+        $makairaResponse
+    ): EntitySearchResult
     {
         foreach ($makairaResponse->product->aggregations as $aggregation) {
             $makFilter = $this->createAggregationFilter($aggregation);
@@ -24,20 +28,23 @@ class AggregationProcessingService
                 $shopwareResult->getAggregations()->add($makFilter);
             }
         }
+
         return $shopwareResult;
     }
 
-    private function createAggregationFilter($aggregation)
+    private function createAggregationFilter($aggregation): ?AggregationResult
     {
+        //Speziele aggregation gefunden über den nahmen
+        switch ($aggregation->key) {
+            case 'color':
+                return $this->colorLogic->MakairaColorFilter($aggregation);
+        }
+
+        //Generic aggregation die für alle gleich sind.
         switch ($aggregation->type) {
-            case 'list_multiselect':
-                if ($aggregation->key == 'color') {
-                    return $this->colorLogic->makairaColorFilter($aggregation);
-                } else {
-                    return $this->createCustomAggregationFilter($aggregation);
-                }
             case 'range_slider_price':
                 return new StatsResult('filter_' . $aggregation->key, $aggregation->min, $aggregation->max, ($aggregation->min + $aggregation->max) / 2, $aggregation->max);
+            case 'list_multiselect':
             case 'list_multiselect_custom_1':
                 return $this->createCustomAggregationFilter($aggregation);
             default:
