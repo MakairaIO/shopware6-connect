@@ -9,7 +9,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
 
 class ColorLogic
 {
-    public function MakairaColorFilter($aggregation): EntityResult
+    private $fallbackColorId = 20;
+
+    public function makairaColorFilter($aggregation): EntityResult
     {
         $options = [];
 
@@ -63,7 +65,7 @@ class ColorLogic
             33 => 'green',
         ];
 
-        return $colorIds[min($key, \count($colorIds) - 1)];
+        return array_key_exists($key, $colorIds) ? $colorIds[$key] : $colorIds[$this->fallbackColorId];
     }
 
     private function getColorLocalizedName($key)
@@ -101,6 +103,6 @@ class ColorLogic
             33 => 'Dunkelgrün',
         ];
 
-        return $localizedColorNames[min($key, \count($localizedColorNames) - 1)];
+        return array_key_exists($key, $localizedColorNames) ? $localizedColorNames[$key] : $localizedColorNames[$this->fallbackColorId];
     }
 }

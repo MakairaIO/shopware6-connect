@@ -84,8 +84,9 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
 
         $result = ProductListingResult::createFrom($shopwareResult);
 
-        $categories = new ArrayEntity(array_splice($makairaResponse->category->items ?? [], 10));
-        $result->addExtension('makairaCategories', $categories);
+        $categories = $makairaResponse->category->items ?? [];
+        $categoriesEntity = new ArrayEntity(array_splice($categories, 0, 10));
+        $result->addExtension('makairaCategories', $categoriesEntity);
 
         $this->eventDispatcher->dispatch(
             new ProductSuggestResultEvent($request, $result, $context),

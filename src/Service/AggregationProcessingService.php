@@ -31,7 +31,11 @@ class AggregationProcessingService
     {
         switch ($aggregation->type) {
             case 'list_multiselect':
-                return $this->colorLogic->MakairaColorFilter($aggregation);
+                if ($aggregation->key == 'color') {
+                    return $this->colorLogic->makairaColorFilter($aggregation);
+                } else {
+                    return $this->createCustomAggregationFilter($aggregation);
+                }
             case 'range_slider_price':
                 return new StatsResult('filter_' . $aggregation->key, $aggregation->min, $aggregation->max, ($aggregation->min + $aggregation->max) / 2, $aggregation->max);
             case 'list_multiselect_custom_1':
