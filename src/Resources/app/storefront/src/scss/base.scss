@@ -20,3 +20,8 @@
 .search-suggest-category-spacer {
   margin: 0 0.2rem;
 }
+
+.filter-panel.is-loading {
+  pointer-events: none;
+  opacity: 0.6;
+}

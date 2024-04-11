@@ -22,6 +22,7 @@ use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -66,11 +67,18 @@ class ProductSearchRoute extends AbstractProductSearchRoute
             return $this->decorated->load($request, $context, $criteria);
         }
 
+        $redirectUrl = $this->checkForSearchRedirect($makairaResponse);
+
+        if ($redirectUrl) {
+            $redirectResponse = new RedirectResponse($redirectUrl, 302);
+            $redirectResponse->send();
+        }
+
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = (new Pipeline())
-            ->pipe(fn($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
-            ->pipe(fn($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
+            ->pipe(fn ($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
+            ->pipe(fn ($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
             ->process($shopwareResult);
 
         $this->eventDispatcher->dispatch(new ProductSearchCriteriaEvent($request, $criteria, $context), ProductEvents::PRODUCT_SEARCH_CRITERIA);
@@ -88,5 +96,21 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         if (!$request->get('search')) {
             throw new MissingRequestParameterException('search');
         }
+    }
+
+    private function checkForSearchRedirect($makairaResponse): ?string
+    {
+
+        $redirects = isset($makairaResponse->searchredirect) ? $makairaResponse->searchredirect->items : [];
+
+        if (count($redirects) > 0) {
+            $targetUrl = $redirects[0]->fields->targetUrl;
+
+            if ($targetUrl) {
+                return $targetUrl;
+            }
+        }
+
+        return null;
     }
 }

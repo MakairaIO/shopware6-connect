@@ -25,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -91,6 +92,11 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
 
         $result = ProductListingResult::createFrom($shopwareResult);
+
+        $categories = $makairaResponse->category->items ?? [];
+        $categoriesEntity = new ArrayEntity(array_splice($categories, 0, 10));
+        $result->addExtension('makairaCategories', $categoriesEntity);
+
         $this->eventDispatcher->dispatch(
             new ProductSuggestResultEvent($request, $result, $context),
             ProductEvents::PRODUCT_SUGGEST_RESULT
