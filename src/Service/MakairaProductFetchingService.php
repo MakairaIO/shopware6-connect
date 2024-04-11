@@ -21,52 +21,62 @@ class MakairaProductFetchingService
         private readonly PluginConfig $config,
         private readonly ApiClientFactory $apiClientFactory,
         private readonly EventDispatcherInterface $dispatcher,
-    ) {}
+    ) {
+    }
 
     public function fetchProductsFromMakaira(SalesChannelContext $context, string $query, Criteria $criteria, array $makairaSorting, array $makairaFilter): ?\stdClass
+    {
+        return $this->makeRequest(
+            $context,
+            $this->dispatchEvent(
+                ModifierQueryRequestEvent::NAME_SEARCH,
+                [
+                    'isSearch' => true,
+                    'enableAggregations' => true,
+                    'aggregations' => $makairaFilter,
+                    'constraints' => $this->getDefaultConstraints($context),
+                    'searchPhrase' => $query,
+                    'count' => $criteria->getLimit(),
+                    'offset' => $criteria->getOffset(),
+                    'sorting' => $makairaSorting,
+                ]
+            )
+        );
+    }
+
+    public function fetchMakairaProductsFromCategory(SalesChannelContext $context, string $categoryId, Criteria $criteria, array $filter, array $sorting): ?\stdClass
+    {
+        return $this->makeRequest(
+            $context,
+            $this->dispatchEvent(
+                ModifierQueryRequestEvent::NAME_SEARCH,
+                [
+                    'isSearch' => false,
+                    'enableAggregations' => true,
+                    'constraints' => array_merge($this->getDefaultConstraints($context), ['query.category_id' => [$categoryId]]),
+                    'count' => $criteria->getLimit(),
+                    'offset' => $criteria->getOffset(),
+                    'searchPhrase' => '',
+                    'aggregations' => $filter,
+                    'sorting' => $sorting,
+                    'customFilter' => [],
+                ]
+            )
+        );
+    }
+
+    public function fetchSuggestionsFromMakaira(SalesChannelContext $context, $query): ?\stdClass
     {
         return $this->makeRequest($context, $this->dispatchEvent(
             ModifierQueryRequestEvent::NAME_SEARCH,
             [
                 'isSearch' => true,
                 'enableAggregations' => true,
-                'aggregations' => $makairaFilter,
                 'constraints' => $this->getDefaultConstraints($context),
                 'searchPhrase' => $query,
-                'count' => $criteria->getLimit(),
-                'offset' => $criteria->getOffset(),
-                'sorting' => $makairaSorting,
-            ])
-        );
-    }
-
-    public function fetchMakairaProductsFromCategory(SalesChannelContext $context, string $categoryId, Criteria $criteria, array $filter, array $sorting): ?\stdClass
-    {
-        return $this->makeRequest($context, $this->dispatchEvent(
-            ModifierQueryRequestEvent::NAME_SEARCH,
-            [
-                'isSearch' => false,
-                'enableAggregations' => true,
-                'constraints' => array_merge($this->getDefaultConstraints($context), ['query.category_id' => [$categoryId]]),
-                'count' => $criteria->getLimit(),
-                'offset' => $criteria->getOffset(),
-                'searchPhrase' => '',
-                'aggregations' => $filter,
-                'sorting' => $sorting,
-                'customFilter' => [],
-            ])
-        );
-    }
-
-    public function fetchSuggestionsFromMakaira(SalesChannelContext $context, $query): ?\stdClass
-    {
-        return $this->makeRequest($context, [
-            'isSearch' => true,
-            'enableAggregations' => true,
-            'constraints' => $this->getDefaultConstraints($context),
-            'searchPhrase' => $query,
-            'count' => '10',
-        ]);
+                'count' => '10',
+            ]
+        ));
     }
 
     private function makeRequest(SalesChannelContext $context, array $payload): ?\stdClass
