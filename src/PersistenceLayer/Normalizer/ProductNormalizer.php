@@ -47,6 +47,22 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'path' => '',
         ]);
 
+        $images = $product->getMedia()->fmap(function (ProductMediaEntity $media): ?array {
+            if (null === $media->getMedia()) {
+                return null;
+            }
+
+            $thumbnails = [];
+            foreach ($media->getMedia()->getThumbnails() as $thumbnail) {
+                $thumbnails[$thumbnail->getWidth() . 'x' . $thumbnail->getHeight()] = $thumbnail->getUrl();
+            }
+
+            return [
+                'original' => $media->getMedia()->getUrl(),
+                'thumbnails' => $thumbnails,
+            ];
+        });
+
         return [
             'id' => $entityId,
             'type' => null !== $product->getParentId() ? 'variant' : 'product',
@@ -81,7 +97,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'searchkeys' => $this->getSearchKeys($product),
             'tags' => $product->getTags()->map(fn (TagEntity $tag): string => $tag->getName()),
             'price' => $product->getCalculatedPrice()->getUnitPrice(),
-            'images' => array_values($product->getMedia()->fmap(fn (ProductMediaEntity $media): ?string => $media->getMedia()?->getUrl())),
+            'images' => array_values($images),
             'url' => $this->urlGenerator->generate('frontend.detail.page', 'productId', $product->getId(), $context),
             'timestamp' => ($product->getUpdatedAt() ?? $product->getCreatedAt())->format('Y-m-d H:i:s'),
         ];
