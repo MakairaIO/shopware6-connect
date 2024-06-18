@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Service;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -31,6 +33,7 @@ class SortingMappingService
                 $sort[] = [$field, $direction];
             }
         }
+
         return $sort ? [$sort[0][0] => $sort[0][1]] : [];
     }
 }

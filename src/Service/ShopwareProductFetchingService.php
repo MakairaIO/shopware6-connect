@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Service;
 
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -19,7 +19,7 @@ class ShopwareProductFetchingService
     public function __construct(
         private readonly SalesChannelRepository $salesChannelProductRepository,
         private readonly RequestCriteriaBuilder $criteriaBuilder,
-        private readonly ProductDefinition $definition
+        private readonly ProductDefinition $definition,
     ) {
     }
 
@@ -27,7 +27,7 @@ class ShopwareProductFetchingService
         $makairaResponse,
         Request $request,
         Criteria $criteria,
-        SalesChannelContext $context
+        SalesChannelContext $context,
     ): EntitySearchResult {
         $ids = $this->extractProductIdsFromMakairaResponse($makairaResponse);
 
@@ -78,6 +78,7 @@ class ShopwareProductFetchingService
         $productMap = array_column($shopwareResult->getEntities()->getElements(), null, 'productNumber');
 
         $orderedProducts = array_filter(array_map(fn ($id) => $productMap[$id] ?? null, $ids));
+
         return new EntitySearchResult('product', $total, new EntityCollection($orderedProducts), $shopwareResult->getAggregations(), $shopwareResult->getCriteria(), $shopwareResult->getContext());
     }
 }

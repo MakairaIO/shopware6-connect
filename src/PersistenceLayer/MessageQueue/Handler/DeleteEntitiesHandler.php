@@ -16,6 +16,7 @@ final readonly class DeleteEntitiesHandler
     public function __construct(private Updater $updater, private ContextFactory $contextFactory)
     {
     }
+
     public function __invoke(DeleteEntities $message): void
     {
         $this->updater->delete(

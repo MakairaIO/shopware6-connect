@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Utils;
 
 use Ixomo\MakairaConnect\Exception\AggregationException;
@@ -83,8 +85,8 @@ class ColorLogic
             $color = new PropertyGroupOptionEntity();
             $color->setName($value->key);
             $color->setId($value->key);
-            $color->setColorHexCode($this->getColorName((int)$value->key));
-            $color->setTranslated(['name' => $this->getColorLocalizedName((int)$value->key), 'position' => $value->position]);
+            $color->setColorHexCode($this->getColorName((int) $value->key));
+            $color->setTranslated(['name' => $this->getColorLocalizedName((int) $value->key), 'position' => $value->position]);
 
             $options[] = $color;
         }

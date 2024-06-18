@@ -27,12 +27,12 @@ class CachedCategoryRoute extends AbstractCategoryRoute
         return $this->decorated;
     }
 
-
     public function load(string $navigationId, Request $request, SalesChannelContext $context): CategoryRouteResponse
     {
         // remove slots to get all cms elements we are interested in filter and listing
         // TODO: optimize to only return filter and listing elements
         $request->query->set('slots', null);
+
         // dont use the cache layer
         return $this->getDecorated()->getDecorated()->load($navigationId, $request, $context);
     }

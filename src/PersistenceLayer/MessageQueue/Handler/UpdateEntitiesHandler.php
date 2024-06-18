@@ -16,6 +16,7 @@ final readonly class UpdateEntitiesHandler
     public function __construct(private Updater $updater, private ContextFactory $contextFactory)
     {
     }
+
     public function __invoke(UpdateEntities $message): void
     {
         $this->updater->update(

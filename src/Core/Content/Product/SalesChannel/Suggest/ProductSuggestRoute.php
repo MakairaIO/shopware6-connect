@@ -8,7 +8,6 @@ use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
 use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Content\Product\Events\ProductSearchCriteriaEvent;
 use Shopware\Core\Content\Product\Events\ProductSuggestCriteriaEvent;
 use Shopware\Core\Content\Product\Events\ProductSuggestResultEvent;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -21,7 +20,6 @@ use Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRouteRespon
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
@@ -79,17 +77,17 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
         );
         $this->addElasticSearchContext($context);
 
-
         $query = $request->query->get('search');
 
         try {
             $makairaResponse = $this->makairaProductFetchingService->fetchSuggestionsFromMakaira($context, $query);
         } catch (\Exception $exception) {
             $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+
             return $this->decorated->load($request, $context, $criteria);
         }
 
-        $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
+        $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse, $request, $criteria, $context);
 
         $result = ProductListingResult::createFrom($shopwareResult);
 

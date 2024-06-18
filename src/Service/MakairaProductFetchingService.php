@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Service;
 
-use GuzzleHttp\Client;
 use Ixomo\MakairaConnect\Api\ApiClient;
 use Ixomo\MakairaConnect\Api\ApiClientFactory;
 use Ixomo\MakairaConnect\Events\ModifierQueryRequestEvent;
@@ -86,7 +87,6 @@ class MakairaProductFetchingService
         /** loberon */
         lbLoggerBrowser()->notice('Makaira request: ' . $payload['searchPhrase'] ?? '', compact('searchURL', 'payload'));
         /** end loberon */
-
         $http = $this->getClient($context)->request(method: 'POST', url: $searchURL, data: $payload);
         $handleResponse = $this->handleResponse($http);
 

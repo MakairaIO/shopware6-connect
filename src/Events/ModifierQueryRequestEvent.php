@@ -18,11 +18,10 @@ class ModifierQueryRequestEvent extends Event
     private \ArrayObject $query;
 
     public function __construct(
-        array $query
+        array $query,
     ) {
         $this->query = new \ArrayObject($query);
     }
-
 
     public function getQuery(): \ArrayObject
     {

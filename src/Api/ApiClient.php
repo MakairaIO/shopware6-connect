@@ -20,7 +20,7 @@ final readonly class ApiClient
     ) {
     }
 
-    public function request(string $method, string $url, array $query = null, array $data = null): ResponseInterface
+    public function request(string $method, string $url, ?array $query = null, ?array $data = null): ResponseInterface
     {
         $body = null !== $data ? json_encode($data, \JSON_PRETTY_PRINT) : null;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Service;
 
 use Ixomo\MakairaConnect\Utils\ColorLogic;
@@ -13,15 +15,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 class AggregationProcessingService
 {
     public function __construct(
-        private readonly ColorLogic $colorLogic
+        private readonly ColorLogic $colorLogic,
     ) {
     }
 
     public function processAggregationsFromMakairaResponse(
         EntitySearchResult $shopwareResult,
-        $makairaResponse
-    ): EntitySearchResult
-    {
+        $makairaResponse,
+    ): EntitySearchResult {
         foreach ($makairaResponse->product->aggregations as $aggregation) {
             $makFilter = $this->createAggregationFilter($aggregation);
             if ($makFilter) {
@@ -34,13 +35,13 @@ class AggregationProcessingService
 
     private function createAggregationFilter($aggregation): ?AggregationResult
     {
-        //Speziele aggregation gefunden über den nahmen
+        // Speziele aggregation gefunden über den nahmen
         switch ($aggregation->key) {
             case 'color':
                 return $this->colorLogic->MakairaColorFilter($aggregation);
         }
 
-        //Generic aggregation die für alle gleich sind.
+        // Generic aggregation die für alle gleich sind.
         switch ($aggregation->type) {
             case 'range_slider_price':
                 return new StatsResult('filter_' . $aggregation->key, $aggregation->min, $aggregation->max, ($aggregation->min + $aggregation->max) / 2, $aggregation->max);
@@ -59,7 +60,7 @@ class AggregationProcessingService
         // we only want to show if there is a 1
         $showFilter = false;
         foreach ($aggregation->values as $value) {
-            if ($value->key == 1) {
+            if (1 == $value->key) {
                 $showFilter = true;
             }
         }

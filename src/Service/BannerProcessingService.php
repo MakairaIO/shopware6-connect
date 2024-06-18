@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Service;
 
 use Ixomo\MakairaConnect\PluginConfig;
@@ -13,18 +15,18 @@ class BannerProcessingService
     public function __construct(private readonly PluginConfig $config)
     {
     }
+
     public function getBaseMediaUrl($context, $mediaUrl)
     {
-        return "https://" . $this->config->getApiCustomer($context->getSalesChannelId()) . ".makaira.media/" . $mediaUrl;
+        return 'https://' . $this->config->getApiCustomer($context->getSalesChannelId()) . '.makaira.media/' . $mediaUrl;
     }
 
     public function processBannersFromMakairaResponse(
         EntitySearchResult $shopwareResult,
-        \StdClass $makairaResponse,
+        \stdClass $makairaResponse,
         SalesChannelContext $context,
-    ): EntitySearchResult
-    {
-        $banner = array();
+    ): EntitySearchResult {
+        $banner = [];
 
         $total = $shopwareResult->getTotal();
 
@@ -34,16 +36,15 @@ class BannerProcessingService
 
         foreach ($makairaResponse->banners as $item) {
             if (isset($item->position)) {
-
                 if ($item->imageDesktop) {
-                    $mediaDesktop =  new MediaEntity();
+                    $mediaDesktop = new MediaEntity();
                     $mediaDesktop->setAlt($item->title);
                     $mediaDesktop->setUrl($this->getBaseMediaUrl($context, $item->imageDesktop));
                     $item->mediaDesktop = $mediaDesktop;
                 }
 
                 if ($item->imageMobile) {
-                    $media =  new MediaEntity();
+                    $media = new MediaEntity();
                     $media->setAlt($item->title);
                     $media->setUrl($this->getBaseMediaUrl($context, $item->imageMobile));
                     $item->media = $media;
@@ -55,7 +56,7 @@ class BannerProcessingService
                 }
 
                 // if we have less items then the position we move the first item to be shown
-                if ((int)$item->position > $total && !isset($banner[$total])) {
+                if ((int) $item->position > $total && !isset($banner[$total])) {
                     $item->position = $total + 1;
                 }
 

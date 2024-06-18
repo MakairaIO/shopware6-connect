@@ -6,5 +6,4 @@ namespace Ixomo\MakairaConnect\Exception;
 
 class NoDataException extends \Exception
 {
-
 }

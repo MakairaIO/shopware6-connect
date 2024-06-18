@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ixomo\MakairaConnect\Service;
 
 use Symfony\Component\HttpFoundation\Request;

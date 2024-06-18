@@ -36,26 +36,19 @@ final readonly class ProductNormalizer implements NormalizerInterface
     {
         $product = $this->loadEntity($entityId, $context);
 
-        $filteredCustomFields = [];
-        $customFields = $product->getCustomFields();
-        foreach ($customFields as $key => $value) {
-            if (!is_string($value)){
-                $filteredCustomFields[$key] = $value;
-                continue;
-            }
-            $filteredCustomFields[$key] = $this->removeEscapeCharacters($value);
-        }
-        $categoriesRaw = $product->getCategories()->getElements();
-        $categories = [];
-        foreach ($categoriesRaw as $category) {
-            $categories[] = [
-                'catid' => $category->getId(),
-                'title' => $category->getName(),
-                'shopid' => 1,
-                'pos' => 0,
-                'path' => ''
-            ];
-        }
+        $customFields = array_map(
+            fn ($value) => \is_string($value) ? $this->removeEscapeCharacters($value) : $value,
+            $product->getCustomFields() ?? []
+        );
+
+        $categories = $product->getCategories()->map(fn (CategoryEntity $category): array => [
+            'catid' => $category->getId(),
+            'title' => $category->getName(),
+            'shopid' => 1,
+            'pos' => 0,
+            'path' => '',
+        ]);
+
         return [
             'id' => $entityId,
             'type' => null !== $product->getParentId() ? 'variant' : 'product',
@@ -73,7 +66,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'meta_title' => $product->getTranslation('metaTitle'),
             'meta_description' => $product->getTranslation('metaDescription'),
             'attributeStr' => $this->getGroupedOptions($product->getProperties(), $product->getOptions()),
-            'category' => $categories,
+            'category' => array_values($categories),
             'width' => $product->getWidth(),
             'height' => $product->getHeight(),
             'length' => $product->getLength(),
@@ -84,7 +77,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'purchaseUnit' => $product->getPurchaseUnit(),
             'manufacturerid' => $product->getManufacturerId(),
             'manufacturer_title' => $product->getManufacturer()?->getName(),
-            'customFields' => $filteredCustomFields,
+            'customFields' => $customFields,
             'topseller' => $product->getMarkAsTopseller(),
             'searchable' => true,
             'searchkeys' => $this->getSearchKeys($product),
@@ -148,7 +141,6 @@ final readonly class ProductNormalizer implements NormalizerInterface
             $grouped[$group->getId()]['value'][] = $property->getTranslation('name');
         }
 
-
         foreach ($options ?? [] as $option) {
             $group = $option->getGroup();
             if (!isset($grouped[$group->getId()])) {
@@ -162,19 +154,11 @@ final readonly class ProductNormalizer implements NormalizerInterface
             $grouped[$group->getId()]['value'][] = $option->getTranslation('name');
         }
 
-
-/*        foreach ($options ?? [] as $option) {
-            $grouped[$option->getGroupId()]['value'] = [
-                $option->getTranslation('name'),
-            ];
-        }*/
-        //dd($properties, $options, array_values($grouped));
-
         return array_values($grouped);
     }
 
     private function removeEscapeCharacters(string $string): string
     {
-        return json_encode(json_decode($string, true), JSON_UNESCAPED_UNICODE);
+        return json_encode(json_decode($string, true), \JSON_UNESCAPED_UNICODE);
     }
 }

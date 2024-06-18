@@ -86,21 +86,21 @@ class ProductListingRoute extends AbstractProductListingRoute
 
             $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $catId, $criteria, $makairaFilter, $makairaSorting);
 
-            if (is_null($makairaResponse)) {
+            if (null === $makairaResponse) {
                 throw new NoDataException('Keine Daten oder fehlerhaft vom Makaira Server.');
             }
         } catch (\Exception $exception) {
             $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
-        $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
+        $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse, $request, $criteria, $context);
 
         $result = (new Pipeline())
-            ->pipe(fn($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
-            ->pipe(fn($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
+            ->pipe(fn ($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
+            ->pipe(fn ($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
             ->process($shopwareResult);
-
 
         /** @var ProductListingResult $result */
         $finalResult = ProductListingResult::createFrom($result);
@@ -140,6 +140,7 @@ class ProductListingRoute extends AbstractProductListingRoute
     {
         $categoryCriteria = new Criteria([$categoryId]);
         $categoryCriteria->setTitle('product-listing-route::category-loading');
+
         /** @var CategoryEntity $category */
         return $this->categoryRepository->search($categoryCriteria, $context->getContext())->first();
     }

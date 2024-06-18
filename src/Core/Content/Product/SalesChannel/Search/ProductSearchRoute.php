@@ -59,11 +59,12 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
             $makairaResponse = $this->makairaProductFetchingService->fetchProductsFromMakaira($context, $query, $criteria, $makairaSorting, $makairaFilter);
 
-            if (is_null($makairaResponse)) {
+            if (null === $makairaResponse) {
                 throw new NoDataException('Keine Daten oder fehlerhaft vom Makaira Server.');
             }
         } catch (\Exception $exception) {
             $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+
             return $this->decorated->load($request, $context, $criteria);
         }
 
@@ -74,7 +75,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
             $redirectResponse->send();
         }
 
-        $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse,  $request,  $criteria,  $context);
+        $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse, $request, $criteria, $context);
 
         $result = (new Pipeline())
             ->pipe(fn ($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
@@ -84,7 +85,6 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $this->eventDispatcher->dispatch(new ProductSearchCriteriaEvent($request, $criteria, $context), ProductEvents::PRODUCT_SEARCH_CRITERIA);
 
         $finalResult = ProductListingResult::createFrom($result);
-
 
         $this->eventDispatcher->dispatch(new ProductSearchResultEvent($request, $finalResult, $context), ProductEvents::PRODUCT_SEARCH_RESULT);
 
@@ -100,10 +100,9 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
     private function checkForSearchRedirect($makairaResponse): ?string
     {
-
         $redirects = isset($makairaResponse->searchredirect) ? $makairaResponse->searchredirect->items : [];
 
-        if (count($redirects) > 0) {
+        if (\count($redirects) > 0) {
             $targetUrl = $redirects[0]->fields->targetUrl;
 
             if ($targetUrl) {

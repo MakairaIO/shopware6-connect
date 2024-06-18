@@ -28,7 +28,7 @@ final readonly class ContextFactory
     ) {
     }
 
-    public function create(string $salesChannelId, string $languageId = null): SalesChannelContext
+    public function create(string $salesChannelId, ?string $languageId = null): SalesChannelContext
     {
         return $this->contextFactory->create(Uuid::randomHex(), $salesChannelId, [
             SalesChannelContextService::LANGUAGE_ID => $languageId,
