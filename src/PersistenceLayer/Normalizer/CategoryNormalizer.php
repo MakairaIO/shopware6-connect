@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
+use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -15,6 +16,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 final readonly class CategoryNormalizer implements NormalizerInterface
 {
+    use CustomFieldsTrait;
+
     /**
      * @param SalesChannelRepository<CategoryCollection> $repository
      */
@@ -40,7 +43,7 @@ final readonly class CategoryNormalizer implements NormalizerInterface
             'parent' => $category->getParentId() ?? '',
             'subcategories' => $this->getSubcategories($category, $context),
             'hierarchy' => $this->getHierarchy($category),
-            'customFields' => $category->getCustomFields(),
+            'customFields' => $this->processCustomFields($category->getCustomFields()),
             'sorting' => $this->getSorting($category, $context),
             'active' => $category->getActive(),
             'hidden' => !$category->getVisible(),

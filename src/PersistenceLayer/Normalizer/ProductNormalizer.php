@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
+use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductSearchKeyword\ProductSearchKeywordEntity;
@@ -20,6 +21,8 @@ use Shopware\Core\System\Tag\TagEntity;
 
 final readonly class ProductNormalizer implements NormalizerInterface
 {
+    use CustomFieldsTrait;
+
     /**
      * @param SalesChannelRepository<ProductCollection> $repository
      */
@@ -35,11 +38,6 @@ final readonly class ProductNormalizer implements NormalizerInterface
     public function normalize(string $entityId, SalesChannelContext $context): array
     {
         $product = $this->loadEntity($entityId, $context);
-
-        $customFields = array_map(
-            fn ($value) => \is_string($value) ? $this->removeEscapeCharacters($value) : $value,
-            $product->getCustomFields() ?? []
-        );
 
         $categories = $product->getCategories()->map(fn (CategoryEntity $category): array => [
             'catid' => $category->getId(),
@@ -77,7 +75,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'purchaseUnit' => $product->getPurchaseUnit(),
             'manufacturerid' => $product->getManufacturerId(),
             'manufacturer_title' => $product->getManufacturer()?->getName(),
-            'customFields' => $customFields,
+            'customFields' => $this->processCustomFields($product->getCustomFields()),
             'topseller' => $product->getMarkAsTopseller(),
             'searchable' => true,
             'searchkeys' => $this->getSearchKeys($product),
@@ -155,10 +153,5 @@ final readonly class ProductNormalizer implements NormalizerInterface
         }
 
         return array_values($grouped);
-    }
-
-    private function removeEscapeCharacters(string $string): string
-    {
-        return json_encode(json_decode($string, true), \JSON_UNESCAPED_UNICODE);
     }
 }
