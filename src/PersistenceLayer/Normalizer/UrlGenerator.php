@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
+use Ixomo\MakairaConnect\PluginConfig;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -19,6 +20,7 @@ final readonly class UrlGenerator
         private SalesChannelRepository $seoUrlRepository,
         private RouterInterface $router,
         private UrlHelper $urlHelper,
+        private PluginConfig $config,
     ) {
     }
 
@@ -28,13 +30,15 @@ final readonly class UrlGenerator
         $criteria->addFilter(new EqualsFilter('routeName', $routeName));
         $criteria->addFilter(new EqualsFilter('foreignKey', $entityId));
 
-        /** @var SeoUrlEntity $seoUrl */
+        /** @var SeoUrlEntity|null $seoUrl */
         $seoUrl = $this->seoUrlRepository->search($criteria, $context)->first();
 
-        if ($seoUrl) {
-            return $this->urlHelper->getAbsoluteUrl($seoUrl->getSeoPathInfo());
-        } else {
-            return $this->router->generate($routeName, [$paramName => $entityId], UrlGeneratorInterface::ABSOLUTE_URL);
-        }
+        $relativeUrl = $seoUrl
+            ? $seoUrl->getSeoPathInfo()
+            : $this->router->generate($routeName, [$paramName => $entityId], UrlGeneratorInterface::RELATIVE_PATH);
+
+        return 'absolute' === $this->config->getIndexUrlMode()
+            ? $this->urlHelper->getAbsoluteUrl($relativeUrl)
+            : $relativeUrl;
     }
 }

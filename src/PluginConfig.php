@@ -60,6 +60,11 @@ final readonly class PluginConfig
         return $this->get('language', $salesChannelId);
     }
 
+    public function getIndexUrlMode(?string $salesChannelId = null): string
+    {
+        return $this->get('indexUrlMode', $salesChannelId);
+    }
+
     public function getLastPersistenceLayerUpdate(?string $salesChannelId = null): ?\DateTimeInterface
     {
         $dateTime = $this->get('lastPersistenceLayerUpdate', $salesChannelId);

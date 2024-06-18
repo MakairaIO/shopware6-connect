@@ -48,6 +48,28 @@
         </input-field>
     </card>
     <card>
+        <title>Index</title>
+        <title lang="de-DE">Index</title>
+        <input-field type="single-select">
+            <name>indexUrlMode</name>
+            <label>Links</label>
+            <label lang="de-DE">Verlinkung</label>
+            <options>
+                <option>
+                    <id>relative</id>
+                    <name>Generate relative links</name>
+                    <name lang="de-DE">Generierte relative Links</name>
+                </option>
+                <option>
+                    <id>absolute</id>
+                    <name>Generate absolute links</name>
+                    <name lang="de-DE">Generierte absolute Links</name>
+                </option>
+            </options>
+            <defaultValue>relative</defaultValue>
+        </input-field>
+    </card>
+    <card>
         <title>Persistence Layer</title>
         <title lang="de-DE">Persistence Layer</title>
         <input-field type="datetime">
