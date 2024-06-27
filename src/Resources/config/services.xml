@@ -75,21 +75,41 @@
             <tag name="messenger.message_handler" />
         </service>
 
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\CategoryLoader">
+            <argument key="$repository" type="service" id="sales_channel.category.repository"/>
+            <argument key="$eventDispatcher" type="service" id="event_dispatcher"/>
+            <tag name="ixomo.makaira_connect.persistence_layer.loader" />
+        </service>
+
         <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\CategoryNormalizer">
             <argument key="$repository" type="service" id="sales_channel.category.repository"/>
             <argument key="$urlGenerator" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator"/>
             <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
         </service>
 
-        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductManufacturerNormalizer">
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductManufacturerLoader">
             <argument key="$repository" type="service" id="product_manufacturer.repository"/>
+            <argument key="$eventDispatcher" type="service" id="event_dispatcher"/>
+            <tag name="ixomo.makaira_connect.persistence_layer.loader" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductManufacturerNormalizer">
             <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
         </service>
 
-        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductNormalizer">
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductLoader">
             <argument key="$repository" type="service" id="sales_channel.product.repository"/>
+            <argument key="$eventDispatcher" type="service" id="event_dispatcher"/>
+            <tag name="ixomo.makaira_connect.persistence_layer.loader" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductNormalizer">
             <argument key="$urlGenerator" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator"/>
             <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
+        </service>
+
+        <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\LoaderRegistry">
+            <argument key="$loaders" type="tagged_iterator" tag="ixomo.makaira_connect.persistence_layer.loader" default-index-method="getSupportedEntity"/>
         </service>
 
         <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerRegistry">
@@ -122,6 +142,7 @@
 
         <service id="Ixomo\MakairaConnect\PersistenceLayer\Updater">
             <argument key="$database" type="service" id="Doctrine\DBAL\Connection"/>
+            <argument key="$loaderRegistry" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\LoaderRegistry"/>
             <argument key="$normalizerRegistry" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerRegistry"/>
             <argument key="$eventDispatcher" type="service" id="event_dispatcher"/>
             <argument key="$apiGatewayFactory" type="service" id="Ixomo\MakairaConnect\Api\ApiGatewayFactory"/>

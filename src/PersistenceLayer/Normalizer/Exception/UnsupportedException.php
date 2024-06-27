@@ -8,6 +8,6 @@ class UnsupportedException extends \Exception
 {
     public static function entity(string $entityName): self
     {
-        return new self('The entity ' . $entityName . ' is not supported by any normalizer');
+        return new self('The entity ' . $entityName . ' is not supported');
     }
 }

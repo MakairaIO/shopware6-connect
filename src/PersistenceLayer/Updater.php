@@ -10,6 +10,7 @@ use Ixomo\MakairaConnect\PersistenceLayer\Event\EntityNormalizedEvent;
 use Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager;
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\InvalidDataException;
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\UnsupportedException;
+use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\LoaderRegistry;
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerRegistry;
 use Psr\Clock\ClockInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;
@@ -26,6 +27,7 @@ final class Updater
 
     public function __construct(
         private readonly Connection $database,
+        private readonly LoaderRegistry $loaderRegistry,
         private readonly NormalizerRegistry $normalizerRegistry,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ApiGatewayFactory $apiGatewayFactory,
@@ -105,11 +107,15 @@ final class Updater
      */
     private function normalizeEntity(EntityReference $entityReference, SalesChannelContext $context): array
     {
+        $entity = $this->loaderRegistry
+            ->getLoader($entityReference->getEntityName())
+            ->load($entityReference->getEntityId(), $context);
+
         $normalized = $this->normalizerRegistry
             ->getNormalizer($entityReference->getEntityName())
-            ->normalize($entityReference->getEntityId(), $context);
+            ->normalize($entity, $context);
 
-        $event = new EntityNormalizedEvent($entityReference->getEntityName(), $entityReference->getEntityId(), $normalized);
+        $event = new EntityNormalizedEvent($entityReference->getEntityName(), $entity, $normalized);
         $this->eventDispatcher->dispatch($event);
 
         $normalized = $event->getData();

@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductSearchKeyword\ProductSearchKeywordEntity;
-use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Tag\TagEntity;
 
@@ -23,23 +19,15 @@ final readonly class ProductNormalizer implements NormalizerInterface
 {
     use CustomFieldsTrait;
 
-    /**
-     * @param SalesChannelRepository<ProductCollection> $repository
-     */
-    public function __construct(
-        private SalesChannelRepository $repository,
-        private UrlGenerator $urlGenerator,
-    ) {
+    public function __construct(private UrlGenerator $urlGenerator)
+    {
     }
 
-    /**
-     * @throws NotFoundException
-     */
-    public function normalize(string $entityId, SalesChannelContext $context): array
+    public function normalize(Entity $entity, SalesChannelContext $context): array
     {
-        $product = $this->loadEntity($entityId, $context);
+        \assert($entity instanceof ProductEntity);
 
-        $categories = $product->getCategories()->map(fn (CategoryEntity $category): array => [
+        $categories = $entity->getCategories()->map(fn (CategoryEntity $category): array => [
             'catid' => $category->getId(),
             'title' => $category->getName(),
             'shopid' => 1,
@@ -47,7 +35,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'path' => '',
         ]);
 
-        $images = $product->getMedia()->fmap(function (ProductMediaEntity $media): ?array {
+        $images = $entity->getMedia()->fmap(function (ProductMediaEntity $media): ?array {
             if (null === $media->getMedia()) {
                 return null;
             }
@@ -64,68 +52,48 @@ final readonly class ProductNormalizer implements NormalizerInterface
         });
 
         return [
-            'id' => $entityId,
-            'type' => null !== $product->getParentId() ? 'variant' : 'product',
-            'parent' => $product->getParentId() ?? '',
-            'isVariant' => null !== $product->getParentId(),
+            'id' => $entity->getId(),
+            'type' => null !== $entity->getParentId() ? 'variant' : 'product',
+            'parent' => $entity->getParentId() ?? '',
+            'isVariant' => null !== $entity->getParentId(),
             'shop' => 1,
-            'ean' => $product->getEan() ?? '',
-            'active' => (bool) $product->getActive(),
-            'stock' => $product->getAvailableStock(),
-            'onstock' => 0 < $product->getAvailableStock(),
-            'productNumber' => $product->getProductNumber(),
-            'title' => $product->getTranslation('name'),
-            'longdesc' => $product->getTranslation('description'),
-            'keywords' => $product->getTranslation('keywords'),
-            'meta_title' => $product->getTranslation('metaTitle'),
-            'meta_description' => $product->getTranslation('metaDescription'),
-            'attributeStr' => $this->getGroupedOptions($product->getProperties(), $product->getOptions()),
+            'ean' => $entity->getEan() ?? '',
+            'active' => (bool) $entity->getActive(),
+            'stock' => $entity->getAvailableStock(),
+            'onstock' => 0 < $entity->getAvailableStock(),
+            'productNumber' => $entity->getProductNumber(),
+            'title' => $entity->getTranslation('name'),
+            'longdesc' => $entity->getTranslation('description'),
+            'keywords' => $entity->getTranslation('keywords'),
+            'meta_title' => $entity->getTranslation('metaTitle'),
+            'meta_description' => $entity->getTranslation('metaDescription'),
+            'attributeStr' => $this->getGroupedOptions($entity->getProperties(), $entity->getOptions()),
             'category' => array_values($categories),
-            'width' => $product->getWidth(),
-            'height' => $product->getHeight(),
-            'length' => $product->getLength(),
-            'weight' => $product->getWeight(),
-            'packUnit' => $product->getTranslation('packUnit'),
-            'packUnitPlural' => $product->getTranslation('packUnitPlural'),
-            'referenceUnit' => $product->getReferenceUnit(),
-            'purchaseUnit' => $product->getPurchaseUnit(),
-            'manufacturerid' => $product->getManufacturerId(),
-            'manufacturer_title' => $product->getManufacturer()?->getName(),
-            'customFields' => $this->processCustomFields($product->getCustomFields()),
-            'topseller' => $product->getMarkAsTopseller(),
+            'width' => $entity->getWidth(),
+            'height' => $entity->getHeight(),
+            'length' => $entity->getLength(),
+            'weight' => $entity->getWeight(),
+            'packUnit' => $entity->getTranslation('packUnit'),
+            'packUnitPlural' => $entity->getTranslation('packUnitPlural'),
+            'referenceUnit' => $entity->getReferenceUnit(),
+            'purchaseUnit' => $entity->getPurchaseUnit(),
+            'manufacturerid' => $entity->getManufacturerId(),
+            'manufacturer_title' => $entity->getManufacturer()?->getName(),
+            'customFields' => $this->processCustomFields($entity->getCustomFields()),
+            'topseller' => $entity->getMarkAsTopseller(),
             'searchable' => true,
-            'searchkeys' => $this->getSearchKeys($product),
-            'tags' => $product->getTags()->map(fn (TagEntity $tag): string => $tag->getName()),
-            'price' => $product->getCalculatedPrice()->getUnitPrice(),
+            'searchkeys' => $this->getSearchKeys($entity),
+            'tags' => $entity->getTags()->map(fn (TagEntity $tag): string => $tag->getName()),
+            'price' => $entity->getCalculatedPrice()->getUnitPrice(),
             'images' => array_values($images),
-            'url' => $this->urlGenerator->generate($product, $context),
-            'timestamp' => ($product->getUpdatedAt() ?? $product->getCreatedAt())->format('Y-m-d H:i:s'),
+            'url' => $this->urlGenerator->generate($entity, $context),
+            'timestamp' => ($entity->getUpdatedAt() ?? $entity->getCreatedAt())->format('Y-m-d H:i:s'),
         ];
     }
 
     public static function getSupportedEntity(): string
     {
         return ProductDefinition::ENTITY_NAME;
-    }
-
-    private function loadEntity(string $entityId, SalesChannelContext $context): SalesChannelProductEntity
-    {
-        $criteria = new Criteria([$entityId]);
-        $criteria->addAssociation('media.media');
-        $criteria->addAssociation('configuratorSettings');
-        $criteria->addAssociation('options.group');
-        $criteria->addAssociation('properties.group');
-        $criteria->addAssociation('categories');
-        $criteria->addAssociation('tags');
-        $criteria->addAssociation('manufacturer');
-        $criteria->addAssociation('searchKeywords');
-
-        $entity = $this->repository->search($criteria, $context)->first();
-        if (null === $entity) {
-            throw NotFoundException::entity(self::getSupportedEntity(), $entityId);
-        }
-
-        return $entity;
     }
 
     private function getSearchKeys(ProductEntity $product): ?string

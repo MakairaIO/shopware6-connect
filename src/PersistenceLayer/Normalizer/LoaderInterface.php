@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
+use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-interface NormalizerInterface
+interface LoaderInterface
 {
-    public function normalize(Entity $entity, SalesChannelContext $context): array;
+    /**
+     * @throws NotFoundException If the entity does not exist
+     */
+    public function load(string $entityId, SalesChannelContext $context): Entity;
 
     public static function getSupportedEntity(): string;
 }

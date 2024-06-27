@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\Event;
 
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Event\GenericEvent;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -14,10 +15,10 @@ final class EntityNormalizedEvent extends Event implements GenericEvent
 
     public function __construct(
         private readonly string $entityName,
-        private readonly string $entityId,
+        private readonly Entity $entity,
         private array $data,
     ) {
-        $this->name = 'ixomo.makaira_connect.' . $this->entityName . '.normalized';
+        $this->name = 'ixomo.makaira_connect.' . $entityName . '.normalized';
     }
 
     public function getName(): string
@@ -25,14 +26,9 @@ final class EntityNormalizedEvent extends Event implements GenericEvent
         return $this->name;
     }
 
-    public function getEntityName(): string
+    public function getEntity(): Entity
     {
-        return $this->entityName;
-    }
-
-    public function getEntityId(): string
-    {
-        return $this->entityId;
+        return $this->entity;
     }
 
     public function getData(): array

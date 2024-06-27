@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -27,46 +27,31 @@ final readonly class CategoryNormalizer implements NormalizerInterface
     ) {
     }
 
-    /**
-     * @throws NotFoundException
-     */
-    public function normalize(string $entityId, SalesChannelContext $context): array
+    public function normalize(Entity $entity, SalesChannelContext $context): array
     {
-        $category = $this->loadEntity($entityId, $context);
+        \assert($entity instanceof CategoryEntity);
 
         return [
-            'id' => $entityId,
+            'id' => $entity->getId(),
             'type' => 'category',
             'shop' => 1,
-            'category_title' => $category->getTranslation('name'),
-            'level' => $category->getLevel(),
-            'parent' => $category->getParentId() ?? '',
-            'subcategories' => $this->getSubcategories($category, $context),
-            'hierarchy' => $this->getHierarchy($category),
-            'customFields' => $this->processCustomFields($category->getCustomFields()),
-            'sorting' => $this->getSorting($category, $context),
-            'active' => $category->getActive(),
-            'hidden' => !$category->getVisible(),
-            'url' => $this->urlGenerator->generate($category, $context),
-            'timestamp' => ($category->getUpdatedAt() ?? $category->getCreatedAt())->format('Y-m-d H:i:s'),
+            'category_title' => $entity->getTranslation('name'),
+            'level' => $entity->getLevel(),
+            'parent' => $entity->getParentId() ?? '',
+            'subcategories' => $this->getSubcategories($entity, $context),
+            'hierarchy' => $this->getHierarchy($entity),
+            'customFields' => $this->processCustomFields($entity->getCustomFields()),
+            'sorting' => $this->getSorting($entity, $context),
+            'active' => $entity->getActive(),
+            'hidden' => !$entity->getVisible(),
+            'url' => $this->urlGenerator->generate($entity, $context),
+            'timestamp' => ($entity->getUpdatedAt() ?? $entity->getCreatedAt())->format('Y-m-d H:i:s'),
         ];
     }
 
     public static function getSupportedEntity(): string
     {
         return CategoryDefinition::ENTITY_NAME;
-    }
-
-    private function loadEntity(string $entityId, SalesChannelContext $context): CategoryEntity
-    {
-        $criteria = new Criteria([$entityId]);
-
-        $entity = $this->repository->search($criteria, $context)->first();
-        if (null === $entity) {
-            throw NotFoundException::entity(self::getSupportedEntity(), $entityId);
-        }
-
-        return $entity;
     }
 
     private function getSubcategories(CategoryEntity $category, SalesChannelContext $context): array
