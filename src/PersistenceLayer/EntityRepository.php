@@ -33,7 +33,7 @@ final readonly class EntityRepository
         foreach ($this->repositories as $entityName => $repository) {
             $criteria = new Criteria();
 
-            $this->eventDispatcher->dispatch(new FindAllEntitiesCriteriaEvent($criteria, $context));
+            $this->eventDispatcher->dispatch(new FindAllEntitiesCriteriaEvent($entityName, $criteria, $context));
 
             $searchResult = $repository instanceof SalesChannelRepository
                 ? $repository->searchIds($criteria, $context)
@@ -67,7 +67,7 @@ final readonly class EntityRepository
                 ]));
             }
 
-            $this->eventDispatcher->dispatch(new FindModifiedEntitiesCriteriaEvent($criteria, $context));
+            $this->eventDispatcher->dispatch(new FindModifiedEntitiesCriteriaEvent($entityName, $criteria, $context));
 
             $searchResult = $repository instanceof SalesChannelRepository
                 ? $repository->searchIds($criteria, $context)

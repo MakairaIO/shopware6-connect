@@ -13,9 +13,15 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 final class FindAllEntitiesCriteriaEvent extends NestedEvent implements ShopwareSalesChannelEvent
 {
     public function __construct(
+        private readonly string $entityName,
         private readonly Criteria $criteria,
         private readonly SalesChannelContext $context,
     ) {
+    }
+
+    public function getEntityName(): string
+    {
+        return $this->entityName;
     }
 
     public function getCriteria(): Criteria
