@@ -22,8 +22,8 @@ final readonly class ApiGatewayFactory
         return new ApiGateway(
             $this->apiClientFactory->create($context),
             $this->clock,
-            $this->config->getApiCustomer(),
-            $this->config->getApiInstance()
+            $this->config->getApiCustomer($context->getSalesChannelId()),
+            $this->config->getApiInstance($context->getSalesChannelId())
         );
     }
 }
