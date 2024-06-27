@@ -48,38 +48,14 @@ final class Updater
         $sentAt = $this->clock->now()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
         foreach ($entityReferences as $entityReference) {
-            $addToLog = false;
-
             $normalized = $this->normalizeEntity($entityReference, $context);
 
-            $lastSentData = $this->historyManager->getLastSentData($entityReference, $context);
-            $filteredData = $normalized;
-            if (null !== $lastSentData) {
-                foreach ($filteredData as $field => $value) {
-                    if (
-                        !\in_array($field, ['id', 'type'], true)
-                        && \array_key_exists($field, $lastSentData)
-                        && $lastSentData[$field] === $value
-                    ) {
-                        unset($filteredData[$field]);
-                    }
-                }
-
-                if (2 < \count($filteredData)) {
-                    $apiGateway->updatePersistenceRevision($filteredData, $this->getLanguageCode($context));
-
-                    $addToLog = true;
-                }
-            } else {
+            if ($this->updateRequired($entityReference, $normalized, $context)) {
                 $bulkInsert[] = [
                     'language' => $this->getLanguageCode($context),
-                    'data' => $filteredData,
+                    'data' => $normalized,
                 ];
 
-                $addToLog = true;
-            }
-
-            if ($addToLog) {
                 $log[] = [
                     'entityId' => $entityReference->getEntityId(),
                     'entityName' => $entityReference->getEntityName(),
@@ -146,6 +122,30 @@ final class Updater
         }
 
         return $normalized;
+    }
+
+    private function updateRequired(
+        EntityReference $entityReference,
+        array $normalizedData,
+        SalesChannelContext $context,
+    ): bool {
+        $lastSentData = $this->historyManager->getLastSentData($entityReference, $context);
+
+        if (null === $lastSentData) {
+            return true;
+        }
+
+        foreach ($normalizedData as $field => $value) {
+            if (
+                !\in_array($field, ['id', 'type'], true)
+                && \array_key_exists($field, $lastSentData)
+                && $lastSentData[$field] === $value
+            ) {
+                unset($normalizedData[$field]);
+            }
+        }
+
+        return 2 < \count($normalizedData);
     }
 
     private function getLanguageCode(SalesChannelContext $context): string
