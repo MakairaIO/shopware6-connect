@@ -31,6 +31,7 @@ final readonly class CategoryLoader implements LoaderInterface
     public function load(string $entityId, SalesChannelContext $context): CategoryEntity
     {
         $criteria = new Criteria([$entityId]);
+        $criteria->addAssociation('media');
 
         $this->eventDispatcher->dispatch(new CategoryLoaderCriteriaEvent($criteria, $context));
 

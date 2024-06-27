@@ -104,6 +104,7 @@
         </service>
 
         <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\ProductNormalizer">
+            <argument key="$productReviewRepository" type="service" id="product_review.repository"/>
             <argument key="$urlGenerator" type="service" id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator"/>
             <tag name="ixomo.makaira_connect.persistence_layer.normalizer" />
         </service>

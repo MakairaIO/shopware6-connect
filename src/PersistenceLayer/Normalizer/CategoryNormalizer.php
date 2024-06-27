@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
 use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
+use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\MediaTrait;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -17,6 +18,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 final readonly class CategoryNormalizer implements NormalizerInterface
 {
     use CustomFieldsTrait;
+    use MediaTrait;
 
     /**
      * @param SalesChannelRepository<CategoryCollection> $repository
@@ -40,10 +42,15 @@ final readonly class CategoryNormalizer implements NormalizerInterface
             'parent' => $entity->getParentId() ?? '',
             'subcategories' => $this->getSubcategories($entity, $context),
             'hierarchy' => $this->getHierarchy($entity),
+            'description' => $entity->getTranslation('description'),
+            'metaTitle' => $entity->getTranslation('metaTitle'),
+            'metaDescription' => $entity->getTranslation('metaDescription'),
+            'keywords' => $entity->getTranslation('keywords'),
             'customFields' => $this->processCustomFields($entity->getCustomFields()),
             'sorting' => $this->getSorting($entity, $context),
             'active' => $entity->getActive(),
             'hidden' => !$entity->getVisible(),
+            'image' => $this->processMedia($entity->getMedia()),
             'url' => $this->urlGenerator->generate($entity, $context),
             'timestamp' => ($entity->getUpdatedAt() ?? $entity->getCreatedAt())->format('Y-m-d H:i:s'),
         ];
