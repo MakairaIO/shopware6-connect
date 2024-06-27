@@ -47,7 +47,7 @@ final readonly class CategoryNormalizer implements NormalizerInterface
             'sorting' => $this->getSorting($category, $context),
             'active' => $category->getActive(),
             'hidden' => !$category->getVisible(),
-            'url' => $this->urlGenerator->generate('frontend.navigation.page', 'navigationId', $category->getId(), $context),
+            'url' => $this->urlGenerator->generate($category, $context),
             'timestamp' => ($category->getUpdatedAt() ?? $category->getCreatedAt())->format('Y-m-d H:i:s'),
         ];
     }

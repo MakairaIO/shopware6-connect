@@ -98,7 +98,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'tags' => $product->getTags()->map(fn (TagEntity $tag): string => $tag->getName()),
             'price' => $product->getCalculatedPrice()->getUnitPrice(),
             'images' => array_values($images),
-            'url' => $this->urlGenerator->generate('frontend.detail.page', 'productId', $product->getId(), $context),
+            'url' => $this->urlGenerator->generate($product, $context),
             'timestamp' => ($product->getUpdatedAt() ?? $product->getCreatedAt())->format('Y-m-d H:i:s'),
         ];
     }

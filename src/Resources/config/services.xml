@@ -97,9 +97,8 @@
         </service>
 
         <service id="Ixomo\MakairaConnect\PersistenceLayer\Normalizer\UrlGenerator">
-            <argument key="$seoUrlRepository" type="service" id="sales_channel.seo_url.repository"/>
-            <argument key="$router" type="service" id="Symfony\Component\Routing\RouterInterface"/>
-            <argument key="$urlHelper" type="service" id="Symfony\Component\HttpFoundation\UrlHelper"/>
+            <argument key="$seoUrlPlaceholderHandler" type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+            <argument key="$categoryUrlGenerator" type="service" id="Shopware\Core\Content\Category\Service\CategoryUrlGenerator"/>
             <argument key="$config" type="service" id="Ixomo\MakairaConnect\PluginConfig"/>
         </service>
 

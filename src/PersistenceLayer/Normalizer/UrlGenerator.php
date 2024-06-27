@@ -5,40 +5,51 @@ declare(strict_types=1);
 namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
 
 use Ixomo\MakairaConnect\PluginConfig;
-use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Service\AbstractCategoryUrlGenerator;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\UrlHelper;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 final readonly class UrlGenerator
 {
     public function __construct(
-        private SalesChannelRepository $seoUrlRepository,
-        private RouterInterface $router,
-        private UrlHelper $urlHelper,
+        private SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
+        private AbstractCategoryUrlGenerator $categoryUrlGenerator,
         private PluginConfig $config,
     ) {
     }
 
-    public function generate(string $routeName, string $paramName, string $entityId, SalesChannelContext $context): string
+    public function generate(SalesChannelProductEntity|CategoryEntity $entity, SalesChannelContext $context): ?string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('routeName', $routeName));
-        $criteria->addFilter(new EqualsFilter('foreignKey', $entityId));
+        $urlTemplate = match ($entity::class) {
+            SalesChannelProductEntity::class => $this->seoUrlPlaceholderHandler->generate(
+                'frontend.detail.page',
+                ['productId' => $entity->getId()]
+            ),
+            CategoryEntity::class => $this->categoryUrlGenerator->generate($entity, $context->getSalesChannel()),
+        };
 
-        /** @var SeoUrlEntity|null $seoUrl */
-        $seoUrl = $this->seoUrlRepository->search($criteria, $context)->first();
+        if (null === $urlTemplate) {
+            return null;
+        }
 
-        $relativeUrl = $seoUrl
-            ? $seoUrl->getSeoPathInfo()
-            : $this->router->generate($routeName, [$paramName => $entityId], UrlGeneratorInterface::RELATIVE_PATH);
+        $domain = $this->getDomain($context);
+        $absoluteUrl = $this->seoUrlPlaceholderHandler->replace($urlTemplate, $domain, $context);
 
-        return 'absolute' === $this->config->getIndexUrlMode()
-            ? $this->urlHelper->getAbsoluteUrl($relativeUrl)
-            : $relativeUrl;
+        return ('relative' === $this->config->getIndexUrlMode() && str_starts_with($absoluteUrl, $domain))
+            ? mb_substr($absoluteUrl, mb_strlen($domain))
+            : $absoluteUrl;
+    }
+
+    private function getDomain(SalesChannelContext $context): string
+    {
+        $entity = $context->getSalesChannel()->getDomains()->filterByProperty('languageId', $context->getLanguageId())->first();
+
+        if (null === $entity) {
+            throw new \RuntimeException('Domain not found');
+        }
+
+        return $entity->getUrl();
     }
 }
