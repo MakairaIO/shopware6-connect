@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\History;
+namespace Makaira\Connect\PersistenceLayer\History;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
+use Makaira\Connect\PersistenceLayer\EntityReference;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;

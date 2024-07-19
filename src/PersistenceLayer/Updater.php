@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer;
+namespace Makaira\Connect\PersistenceLayer;
 
 use Doctrine\DBAL\Connection;
-use Ixomo\MakairaConnect\Api\ApiGatewayFactory;
-use Ixomo\MakairaConnect\PersistenceLayer\Event\EntityNormalizedEvent;
-use Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\InvalidDataException;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\UnsupportedException;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\LoaderRegistry;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerRegistry;
+use Makaira\Connect\Api\ApiGatewayFactory;
+use Makaira\Connect\PersistenceLayer\Event\EntityNormalizedEvent;
+use Makaira\Connect\PersistenceLayer\History\HistoryManager;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\InvalidDataException;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\UnsupportedException;
+use Makaira\Connect\PersistenceLayer\Normalizer\LoaderRegistry;
+use Makaira\Connect\PersistenceLayer\Normalizer\NormalizerRegistry;
 use Psr\Clock\ClockInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerDefinition;

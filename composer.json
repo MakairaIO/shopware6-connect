@@ -1,5 +1,5 @@
 {
-  "name": "ixomo/makaira-shopware6-connect",
+  "name": "makaira/shopware6-connect",
   "description": "Connect Shopware 6 to Makaira",
   "version": "0.1.0",
   "type": "shopware-platform-plugin",
@@ -22,11 +22,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Ixomo\\MakairaConnect\\": "src"
+      "Makaira\\Connect\\": "src"
     }
   },
   "extra": {
-    "shopware-plugin-class": "Ixomo\\MakairaConnect\\IxomoMakairaConnect",
+    "shopware-plugin-class": "Makaira\\Connect\\MakairaConnect",
     "label": {
       "de-DE": "Makaira Connect",
       "en-GB": "Makaira Connect"

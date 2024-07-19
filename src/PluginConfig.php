@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect;
+namespace Makaira\Connect;
 
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 final readonly class PluginConfig
 {
-    private const KEY_PREFIX = 'IxomoMakairaConnect.config.';
+    private const KEY_PREFIX = 'MakairaConnect.config.';
 
     public function __construct(private SystemConfigService $systemConfigService)
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Utils;
+namespace Makaira\Connect\Utils;
 
 use Psr\Clock\ClockInterface;
 

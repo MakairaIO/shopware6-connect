@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Api;
+namespace Makaira\Connect\Api;
 
-use Ixomo\MakairaConnect\Exception\UnconfiguredException;
-use Ixomo\MakairaConnect\PluginConfig;
-use Ixomo\MakairaConnect\PluginInfo;
+use Makaira\Connect\Exception\UnconfiguredException;
+use Makaira\Connect\PluginConfig;
+use Makaira\Connect\PluginInfo;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Suggest;
+namespace Makaira\Connect\Core\Content\Product\SalesChannel\Suggest;
 
-use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
-use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
+use Makaira\Connect\Service\MakairaProductFetchingService;
+use Makaira\Connect\Service\ShopwareProductFetchingService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\Events\ProductSuggestCriteriaEvent;

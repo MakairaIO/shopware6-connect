@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Utils;
+namespace Makaira\Connect\Utils;
 
-use Ixomo\MakairaConnect\Exception\AggregationException;
+use Makaira\Connect\Exception\AggregationException;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
@@ -99,7 +99,7 @@ class ColorLogic
     private function getColorName(int $key)
     {
         if (!isset(self::colorIds[$key])) {
-            throw new AggregationException('Farbenamen nicht gefunden in Map \Ixomo\MakairaConnect\Utils\ColorLogic::colorIds für Key: ' . $key);
+            throw new AggregationException('Farbenamen nicht gefunden in Map \Makaira\Connect\Utils\ColorLogic::colorIds für Key: ' . $key);
         }
 
         return self::colorIds[$key];
@@ -108,7 +108,7 @@ class ColorLogic
     private function getColorLocalizedName(int $key)
     {
         if (!isset(self::localizedColorNames[$key])) {
-            throw new AggregationException('Farbenamen nicht gefunden in Map \Ixomo\MakairaConnect\Utils\ColorLogic::localizedColorNames für Key: ' . $key);
+            throw new AggregationException('Farbenamen nicht gefunden in Map \Makaira\Connect\Utils\ColorLogic::localizedColorNames für Key: ' . $key);
         }
 
         return self::localizedColorNames[$key];

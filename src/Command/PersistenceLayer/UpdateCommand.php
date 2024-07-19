@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Command\PersistenceLayer;
+namespace Makaira\Connect\Command\PersistenceLayer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReferenceCollection;
-use Ixomo\MakairaConnect\PersistenceLayer\EntityRepository;
-use Ixomo\MakairaConnect\PersistenceLayer\Updater;
-use Ixomo\MakairaConnect\PluginConfig;
-use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
+use Makaira\Connect\PersistenceLayer\EntityReference;
+use Makaira\Connect\PersistenceLayer\EntityReferenceCollection;
+use Makaira\Connect\PersistenceLayer\EntityRepository;
+use Makaira\Connect\PersistenceLayer\Updater;
+use Makaira\Connect\PluginConfig;
+use Makaira\Connect\SalesChannel\ContextFactory;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(name: 'ixomo:makaira-connect:persistence-layer:update', description: 'Update the Makaira persistence layer')]
+#[AsCommand(name: 'makaira:persistence-layer:update', description: 'Update the Makaira persistence layer')]
 final class UpdateCommand extends Command
 {
     public function __construct(

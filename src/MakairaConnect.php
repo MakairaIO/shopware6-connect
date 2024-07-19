@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect;
+namespace Makaira\Connect;
 
-use Ixomo\MakairaConnect\DependencyInjection\Compiler\EntityRepositoryPass;
+use Makaira\Connect\DependencyInjection\Compiler\EntityRepositoryPass;
 use Shopware\Core\Framework\Plugin;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class IxomoMakairaConnect extends Plugin
+final class MakairaConnect extends Plugin
 {
     public function executeComposerCommands(): bool
     {

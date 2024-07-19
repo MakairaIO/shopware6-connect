@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\ScheduledTask;
+namespace Makaira\Connect\PersistenceLayer\ScheduledTask;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityRepository;
-use Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message\UpdateEntities;
-use Ixomo\MakairaConnect\PluginConfig;
-use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
+use Makaira\Connect\PersistenceLayer\EntityRepository;
+use Makaira\Connect\PersistenceLayer\MessageQueue\Message\UpdateEntities;
+use Makaira\Connect\PluginConfig;
+use Makaira\Connect\SalesChannel\ContextFactory;
 use Psr\Clock\ClockInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository as ShopwareEntityRepository;

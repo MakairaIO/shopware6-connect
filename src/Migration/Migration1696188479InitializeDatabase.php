@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Migration;
+namespace Makaira\Connect\Migration;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
@@ -17,7 +17,7 @@ class Migration1696188479InitializeDatabase extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-            CREATE TABLE IF NOT EXISTS `ixomo_makaira_connect_history` (
+            CREATE TABLE IF NOT EXISTS `makaira_history` (
                 `id` binary(16) NOT NULL,
                 `sales_channel_id` binary(16) NOT NULL,
                 `language_id` binary(16) NOT NULL,
@@ -29,11 +29,11 @@ class Migration1696188479InitializeDatabase extends MigrationStep
                 `updated_at` datetime(3) DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 KEY `custom.select_last_sent_data` (`sales_channel_id`, `language_id`, `entity_name`, `entity_id`, `sent_at`),
-                KEY `fk.ixomo_makaira_connect_history.sales_channel_id` (`sales_channel_id`),
-                KEY `fk.ixomo_makaira_connect_history.language_id` (`language_id`),
-                CONSTRAINT `fk.ixomo_makaira_connect_history.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `fk.ixomo_makaira_connect_history.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-                CONSTRAINT `json.ixomo_makaira_connect_history.data` CHECK (json_valid(`data`))
+                KEY `fk.makaira_history.sales_channel_id` (`sales_channel_id`),
+                KEY `fk.makaira_history.language_id` (`language_id`),
+                CONSTRAINT `fk.makaira_history.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.makaira_history.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+                CONSTRAINT `json.makaira_history.data` CHECK (json_valid(`data`))
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             SQL;
 

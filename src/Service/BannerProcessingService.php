@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Service;
+namespace Makaira\Connect\Service;
 
-use Ixomo\MakairaConnect\PluginConfig;
+use Makaira\Connect\PluginConfig;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Struct\ArrayEntity;

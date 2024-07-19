@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\DependencyInjection\Compiler;
+namespace Makaira\Connect\DependencyInjection\Compiler;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityRepository;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\NormalizerInterface;
+use Makaira\Connect\PersistenceLayer\EntityRepository;
+use Makaira\Connect\PersistenceLayer\Normalizer\NormalizerInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class EntityRepositoryPass implements CompilerPassInterface
 {
-    private const NORMALIZER_TAG = 'ixomo.makaira_connect.persistence_layer.normalizer';
+    private const NORMALIZER_TAG = 'makaira.persistence_layer.normalizer';
 
     public function process(ContainerBuilder $container): void
     {

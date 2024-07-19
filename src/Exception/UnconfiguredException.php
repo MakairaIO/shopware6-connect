@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Exception;
+namespace Makaira\Connect\Exception;
 
 class UnconfiguredException extends \Exception
 {

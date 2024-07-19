@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits;
+namespace Makaira\Connect\PersistenceLayer\Normalizer\Traits;
 
 trait CustomFieldsTrait
 {

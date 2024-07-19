@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer;
+namespace Makaira\Connect\PersistenceLayer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Event\FindAllEntitiesCriteriaEvent;
-use Ixomo\MakairaConnect\PersistenceLayer\Event\FindModifiedEntitiesCriteriaEvent;
+use Makaira\Connect\PersistenceLayer\Event\FindAllEntitiesCriteriaEvent;
+use Makaira\Connect\PersistenceLayer\Event\FindModifiedEntitiesCriteriaEvent;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository as ShopwareEntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;

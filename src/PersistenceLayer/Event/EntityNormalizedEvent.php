@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Event;
+namespace Makaira\Connect\PersistenceLayer\Event;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Event\GenericEvent;
@@ -14,11 +14,11 @@ final class EntityNormalizedEvent extends Event implements GenericEvent
     private bool $dataChanged = false;
 
     public function __construct(
-        private readonly string $entityName,
+        string $entityName,
         private readonly Entity $entity,
         private array $data,
     ) {
-        $this->name = 'ixomo.makaira_connect.' . $entityName . '.normalized';
+        $this->name = "makaira.{$entityName}.normalized";
     }
 
     public function getName(): string

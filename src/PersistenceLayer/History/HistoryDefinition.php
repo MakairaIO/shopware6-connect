@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\History;
+namespace Makaira\Connect\PersistenceLayer\History;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
@@ -19,7 +19,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 final class HistoryDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'ixomo_makaira_connect_history';
+    public const ENTITY_NAME = 'makaira_history';
 
     public function getEntityName(): string
     {

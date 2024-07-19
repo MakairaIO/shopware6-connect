@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\SalesChannel;
+namespace Makaira\Connect\SalesChannel;
 
-use Ixomo\MakairaConnect\PluginConfig;
+use Makaira\Connect\PluginConfig;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
