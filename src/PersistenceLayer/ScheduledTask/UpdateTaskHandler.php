@@ -9,6 +9,7 @@ use Makaira\Connect\PersistenceLayer\MessageQueue\Message\UpdateEntities;
 use Makaira\Connect\PluginConfig;
 use Makaira\Connect\SalesChannel\ContextFactory;
 use Psr\Clock\ClockInterface;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository as ShopwareEntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -20,13 +21,14 @@ final class UpdateTaskHandler extends ScheduledTaskHandler
 {
     public function __construct(
         ShopwareEntityRepository $scheduledTaskRepository,
+        LoggerInterface $exceptionLogger,
         private readonly EntityRepository $entityRepository,
         private readonly MessageBusInterface $bus,
         private readonly ContextFactory $contextFactory,
         private readonly ClockInterface $clock,
         private readonly PluginConfig $config,
     ) {
-        parent::__construct($scheduledTaskRepository);
+        parent::__construct($scheduledTaskRepository, $exceptionLogger);
     }
 
     public function run(): void

@@ -22,7 +22,7 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -35,7 +35,7 @@ class ProductListingRoute extends AbstractProductListingRoute
 {
     public function __construct(
         AbstractProductListingRoute $decorated,
-        EntityRepositoryInterface $categoryRepository,
+        EntityRepository $categoryRepository,
         ProductStreamBuilderInterface $productStreamBuilder,
         EventDispatcherInterface $eventDispatcher,
         SalesChannelRepository $salesChannelProductRepository,
