@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect;
+namespace Makaira\Connect;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\PluginService;
@@ -22,7 +22,7 @@ final readonly class PluginInfo
     public function getPluginVersion(): string
     {
         return $this->pluginService
-            ->getPluginByName('IxomoMakairaConnect', Context::createDefaultContext())
+            ->getPluginByName('MakairaConnect', Context::createDefaultContext())
             ->getVersion();
     }
 }

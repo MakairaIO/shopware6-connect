@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception;
+namespace Makaira\Connect\PersistenceLayer\Normalizer\Exception;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
+use Makaira\Connect\PersistenceLayer\EntityReference;
 
 class InvalidDataException extends \Exception
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Api;
+namespace Makaira\Connect\Api;
 
 final readonly class RequestSigner
 {

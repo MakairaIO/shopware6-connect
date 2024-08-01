@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Api;
+namespace Makaira\Connect\Api;
 
-use Ixomo\MakairaConnect\PluginConfig;
+use Makaira\Connect\PluginConfig;
 use Psr\Clock\ClockInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

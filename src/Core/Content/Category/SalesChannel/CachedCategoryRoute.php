@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Core\Content\Category\SalesChannel;
+namespace Makaira\Connect\Core\Content\Category\SalesChannel;
 
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;

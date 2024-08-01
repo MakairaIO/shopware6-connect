@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

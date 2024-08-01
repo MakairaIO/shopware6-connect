@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Event\CategoryLoaderCriteriaEvent;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
+use Makaira\Connect\PersistenceLayer\Event\CategoryLoaderCriteriaEvent;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\NotFoundException;
+use Makaira\Connect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;

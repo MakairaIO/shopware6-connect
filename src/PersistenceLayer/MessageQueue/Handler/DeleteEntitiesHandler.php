@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Handler;
+namespace Makaira\Connect\PersistenceLayer\MessageQueue\Handler;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReferenceCollection;
-use Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message\DeleteEntities;
-use Ixomo\MakairaConnect\PersistenceLayer\Updater;
-use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
+use Makaira\Connect\PersistenceLayer\EntityReferenceCollection;
+use Makaira\Connect\PersistenceLayer\MessageQueue\Message\DeleteEntities;
+use Makaira\Connect\PersistenceLayer\Updater;
+use Makaira\Connect\SalesChannel\ContextFactory;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

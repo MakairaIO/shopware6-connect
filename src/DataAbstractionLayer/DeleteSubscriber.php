@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\DataAbstractionLayer;
+namespace Makaira\Connect\DataAbstractionLayer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
-use Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message\DeleteEntities;
-use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
+use Makaira\Connect\PersistenceLayer\EntityReference;
+use Makaira\Connect\PersistenceLayer\MessageQueue\Message\DeleteEntities;
+use Makaira\Connect\SalesChannel\ContextFactory;
 use Shopware\Core\Content\Category\CategoryEvents;
 use Shopware\Core\Content\Product\ProductEvents;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;

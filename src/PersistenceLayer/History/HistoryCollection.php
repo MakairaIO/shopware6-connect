@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\History;
+namespace Makaira\Connect\PersistenceLayer\History;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
@@ -13,7 +13,7 @@ final class HistoryCollection extends EntityCollection
 {
     public function getApiAlias(): string
     {
-        return 'ixomo_makaira_connect_history_collection';
+        return 'makaira_history_collection';
     }
 
     protected function getExpectedClass(): string

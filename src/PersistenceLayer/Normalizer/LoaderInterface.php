@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\NotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\UnsupportedException;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\UnsupportedException;
 
 final class NormalizerRegistry
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Command\PersistenceLayer\History;
+namespace Makaira\Connect\Command\PersistenceLayer\History;
 
-use Ixomo\MakairaConnect\PersistenceLayer\History\HistoryManager;
-use Ixomo\MakairaConnect\SalesChannel\ContextFactory;
+use Makaira\Connect\PersistenceLayer\History\HistoryManager;
+use Makaira\Connect\SalesChannel\ContextFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'ixomo:makaira-connect:persistence-layer:history:garbage-collector', description: 'Garabge collector for the history of the Makaira Persistence Layer')]
+#[AsCommand(name: 'makaira:persistence-layer:history:garbage-collector', description: 'Garabge collector for the history of the Makaira Persistence Layer')]
 final class GarbageCollectorCommand extends Command
 {
     public function __construct(

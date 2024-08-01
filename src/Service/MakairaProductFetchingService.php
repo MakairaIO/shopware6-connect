@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Service;
+namespace Makaira\Connect\Service;
 
-use Ixomo\MakairaConnect\Api\ApiClient;
-use Ixomo\MakairaConnect\Api\ApiClientFactory;
-use Ixomo\MakairaConnect\Events\ModifierQueryRequestEvent;
-use Ixomo\MakairaConnect\PluginConfig;
+use Makaira\Connect\Api\ApiClient;
+use Makaira\Connect\Api\ApiClientFactory;
+use Makaira\Connect\Events\ModifierQueryRequestEvent;
+use Makaira\Connect\PluginConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
