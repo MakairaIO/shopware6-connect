@@ -10,13 +10,13 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i -E \"s/('version'\\s+=>\\s+').*(',)/\\1${nextRelease.version}\\2/\" metadata.php"
+        "prepareCmd": "sed -i -E \"s/MAKAIRA_PLUGIN_VERSION = '[^']+'/MAKAIRA_PLUGIN_VERSION = '${nextRelease.version}'\" src/PluginInfo.php"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["package.json", "CHANGELOG.md", "metadata.php"],
+        "assets": ["package.json", "CHANGELOG.md", "src/PluginInfo.php"],
         "message": "chore(release): ${nextRelease.version} [skip ci] \n\n${nextRelease.notes}"
       }
     ]

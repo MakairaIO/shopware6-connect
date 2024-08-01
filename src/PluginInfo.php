@@ -10,19 +10,19 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final readonly class PluginInfo
 {
-    public function __construct(private ParameterBagInterface $params, private PluginService $pluginService)
+    private const MAKAIRA_PLUGIN_VERSION = '1.0.0';
+
+    public function __construct(private string $shopwareVersion)
     {
     }
 
     public function getShopwareVersion(): string
     {
-        return (string) $this->params->get('kernel.shopware_version');
+        return $this->shopwareVersion;
     }
 
     public function getPluginVersion(): string
     {
-        return $this->pluginService
-            ->getPluginByName('MakairaConnect', Context::createDefaultContext())
-            ->getVersion();
+        return self::MAKAIRA_PLUGIN_VERSION;
     }
 }
