@@ -3,65 +3,10 @@ name: Release a new version
 on:
   push:
     branches: [ "[0-9]+.x", "stable" ]
-  workflow_dispatch: ~
-  pull_request:
-    branches: [ "[0-9]+.x", "stable" ]
-    types: [ opened, synchronize, reopened ]
 
 jobs:
-#  test:
-#    strategy:
-#      matrix:
-#        php: [ '7.4', '8.0', '8.1' ]
-#    name: Run PHP tests
-#    if: |
-#      !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]')) &&
-#      !(github.event_name == 'pull_request' && contains(join(github.event.pull_request.title, github.event.pull_request.body), '[skip ci]'))
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Clone code repo
-#        uses: actions/checkout@v2
-#
-#      - name: Setup PHP
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: ${{ matrix.php }}
-#          tools: composer:v2
-#
-#      - name: Install dependencies
-#        run: composer install
-#
-#      - name: Run phpunit
-#        run: php vendor/bin/phpunit
-#
-#  code-quality:
-#    name: Run code quality checks
-#    runs-on: ubuntu-latest
-#    if: |
-#      !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]')) &&
-#      !(github.event_name == 'pull_request' && contains(join(github.event.pull_request.title, github.event.pull_request.body), '[skip ci]'))
-#    steps:
-#      - name: Clone code repo
-#        uses: actions/checkout@v2
-#
-#      - name: Setup PHP
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: "8.1"
-#          tools: composer:v2
-#
-#      - name: Install dependencies
-#        run: composer install
-#
-#      - name: Run phpcs
-#        run: php vendor/bin/phpcs --standard=PSR2 src/Makaira/
-#
-#      - name: Run phpmd
-#        run: php vendor/bin/phpmd src/Makaira/ text codesize,design
-
   release:
     name: Create a new release
-    if: github.event_name != 'pull_request'
     needs: test
     runs-on: ubuntu-latest
     steps:
