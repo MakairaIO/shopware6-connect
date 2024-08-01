@@ -162,8 +162,7 @@
         </service>
 
         <service id="Makaira\Connect\PluginInfo">
-            <argument key="$params" type="service" id="parameter_bag"/>
-            <argument key="$pluginService" type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
+            <argument key="$params" type="string">%kernel.shopware_version%</argument>
         </service>
         <service id="Psr\Clock\ClockInterface" class="Makaira\Connect\Utils\SystemClock"/>
 
