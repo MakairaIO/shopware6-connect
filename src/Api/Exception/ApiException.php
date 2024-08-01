@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Api\Exception;
+namespace Makaira\Connect\Api\Exception;
 
 use Symfony\Contracts\HttpClient\ResponseInterface;
 

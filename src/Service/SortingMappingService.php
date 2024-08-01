@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Service;
+namespace Makaira\Connect\Service;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\MediaTrait;
+use Makaira\Connect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
+use Makaira\Connect\PersistenceLayer\Normalizer\Traits\MediaTrait;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductReview\ProductReviewCollection;

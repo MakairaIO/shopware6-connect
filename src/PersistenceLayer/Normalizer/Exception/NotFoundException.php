@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception;
+namespace Makaira\Connect\PersistenceLayer\Normalizer\Exception;
 
 class NotFoundException extends \Exception
 {

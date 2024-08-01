@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Events;
+namespace Makaira\Connect\Events;
 
 use Symfony\Contracts\EventDispatcher\Event;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Api;
+namespace Makaira\Connect\Api;
 
 use Shopware\Core\Framework\Util\Random;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

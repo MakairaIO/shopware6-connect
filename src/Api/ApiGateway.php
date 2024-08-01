@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Api;
+namespace Makaira\Connect\Api;
 
-use Ixomo\MakairaConnect\Api\Exception\ApiException;
+use Makaira\Connect\Api\Exception\ApiException;
 use Psr\Clock\ClockInterface;
 
 final readonly class ApiGateway implements ApiGatewayInterface

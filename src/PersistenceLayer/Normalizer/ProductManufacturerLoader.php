@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Event\ProductManufacturerLoaderCriteriaEvent;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
+use Makaira\Connect\PersistenceLayer\Event\ProductManufacturerLoaderCriteriaEvent;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\NotFoundException;
+use Makaira\Connect\PersistenceLayer\Normalizer\Traits\CustomFieldsTrait;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerDefinition;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;

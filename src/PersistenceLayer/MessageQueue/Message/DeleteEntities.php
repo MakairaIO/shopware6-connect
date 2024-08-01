@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\MessageQueue\Message;
+namespace Makaira\Connect\PersistenceLayer\MessageQueue\Message;
 
-use Ixomo\MakairaConnect\PersistenceLayer\EntityReference;
+use Makaira\Connect\PersistenceLayer\EntityReference;
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 final readonly class DeleteEntities implements AsyncMessageInterface

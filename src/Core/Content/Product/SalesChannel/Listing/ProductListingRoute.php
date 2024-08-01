@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\Core\Content\Product\SalesChannel\Listing;
+namespace Makaira\Connect\Core\Content\Product\SalesChannel\Listing;
 
-use Ixomo\MakairaConnect\Exception\NoDataException;
-use Ixomo\MakairaConnect\Service\AggregationProcessingService;
-use Ixomo\MakairaConnect\Service\BannerProcessingService;
-use Ixomo\MakairaConnect\Service\FilterExtractionService;
-use Ixomo\MakairaConnect\Service\MakairaProductFetchingService;
-use Ixomo\MakairaConnect\Service\ShopwareProductFetchingService;
-use Ixomo\MakairaConnect\Service\SortingMappingService;
+use Makaira\Connect\Exception\NoDataException;
+use Makaira\Connect\Service\AggregationProcessingService;
+use Makaira\Connect\Service\BannerProcessingService;
+use Makaira\Connect\Service\FilterExtractionService;
+use Makaira\Connect\Service\MakairaProductFetchingService;
+use Makaira\Connect\Service\ShopwareProductFetchingService;
+use Makaira\Connect\Service\SortingMappingService;
 use League\Pipeline\Pipeline;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ixomo\MakairaConnect\PersistenceLayer\Normalizer;
+namespace Makaira\Connect\PersistenceLayer\Normalizer;
 
-use Ixomo\MakairaConnect\PersistenceLayer\Event\ProductLoaderCriteriaEvent;
-use Ixomo\MakairaConnect\PersistenceLayer\Normalizer\Exception\NotFoundException;
+use Makaira\Connect\PersistenceLayer\Event\ProductLoaderCriteriaEvent;
+use Makaira\Connect\PersistenceLayer\Normalizer\Exception\NotFoundException;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
