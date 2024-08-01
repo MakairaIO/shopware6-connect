@@ -7,7 +7,6 @@ on:
 jobs:
   release:
     name: Create a new release
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Clone code repo
