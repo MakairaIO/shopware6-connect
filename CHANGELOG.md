@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/MakairaIO/shopware6-connect/compare/2.0.0...2.0.1) (2024-08-05)
+
+
+### Bug Fixes
+
+* Change branch definition ([0ace437](https://github.com/MakairaIO/shopware6-connect/commit/0ace437208cc63db2db7e038f5ae4a94f6527861))
+
 # [2.0.0](https://github.com/MakairaIO/shopware6-connect/compare/1.0.0...2.0.0) (2024-08-05)
 
 
