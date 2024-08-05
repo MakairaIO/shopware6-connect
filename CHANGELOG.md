@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/MakairaIO/shopware6-connect/compare/1.0.0...2.0.0) (2024-08-05)
+
+
+### Bug Fixes
+
+* Shopware 6.5 update ([9cd43c9](https://github.com/MakairaIO/shopware6-connect/commit/9cd43c9266bc25aea07dc8cc4b3eea5011f9d7a9))
+
+
+### BREAKING CHANGES
+
+* Code update for Shopware 6.5 (part 1)
+
 # 1.0.0 (2024-08-05)
 
 
