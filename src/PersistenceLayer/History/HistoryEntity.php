@@ -11,12 +11,12 @@ final class HistoryEntity extends Entity
 {
     use EntityIdTrait;
 
-    protected string $salesChannelId;
-    protected string $languageId;
-    protected string $entityName;
-    protected string $entityId;
-    protected array $data;
-    protected \DateTimeInterface $sentAt;
+    private string $salesChannelId;
+    private string $languageId;
+    private string $entityName;
+    private string $entityId;
+    private array $data;
+    private \DateTimeInterface $sentAt;
 
     public function getSalesChannelId(): string
     {

@@ -85,14 +85,14 @@ class MakairaProductFetchingService
         $searchURL = $this->config->getApiBaseUrl($context->getSalesChannelId()) . '/search/';
 
         /** loberon */
-        lbLoggerBrowser()->notice('Makaira request: ' . $payload['searchPhrase'] ?? '', compact('searchURL', 'payload'));
+        lbLoggerBrowser()->notice('Makaira request: ' . $payload['searchPhrase'] ?? '', ['searchURL' => $searchURL, 'payload' => $payload]);
         /** end loberon */
         $http = $this->getClient($context)->request(method: 'POST', url: $searchURL, data: $payload);
         $handleResponse = $this->handleResponse($http);
 
         /** loberon */
         $row = $http->getContent();
-        lbLoggerBrowser()->notice('Makaira response', compact('row', 'handleResponse'));
+        lbLoggerBrowser()->notice('Makaira response', ['row' => $row, 'handleResponse' => $handleResponse]);
         /** end loberon */
 
         return $handleResponse;
@@ -112,10 +112,10 @@ class MakairaProductFetchingService
 
     private function handleResponse(ResponseInterface $response): ?\stdClass
     {
-        return json_decode((string) $response->getContent(), false);
+        return json_decode($response->getContent(), false);
     }
 
-    private function dispatchEvent($eventName, array $query): array
+    private function dispatchEvent(string $eventName, array $query): array
     {
         $event = new ModifierQueryRequestEvent($query);
         $this->dispatcher->dispatch(

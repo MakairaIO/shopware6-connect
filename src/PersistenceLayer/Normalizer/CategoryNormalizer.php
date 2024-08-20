@@ -71,7 +71,7 @@ final readonly class CategoryNormalizer implements NormalizerInterface
 
     private function getHierarchy(CategoryEntity $category): string
     {
-        $hierarchy = null !== $category->getPath() ? \array_slice(explode('|', (string) $category->getPath()), 1, -1) : [];
+        $hierarchy = null !== $category->getPath() ? \array_slice(explode('|', $category->getPath()), 1, -1) : [];
         $hierarchy[] = $category->getId();
 
         return implode('//', $hierarchy);

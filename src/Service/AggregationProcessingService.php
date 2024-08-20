@@ -12,10 +12,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 
-class AggregationProcessingService
+readonly class AggregationProcessingService
 {
     public function __construct(
-        private readonly ColorLogic $colorLogic,
+        private ColorLogic $colorLogic,
     ) {
     }
 
@@ -25,7 +25,7 @@ class AggregationProcessingService
     ): EntitySearchResult {
         foreach ($makairaResponse->product->aggregations as $aggregation) {
             $makFilter = $this->createAggregationFilter($aggregation);
-            if ($makFilter) {
+            if ($makFilter instanceof AggregationResult) {
                 $shopwareResult->getAggregations()->add($makFilter);
             }
         }
@@ -35,22 +35,16 @@ class AggregationProcessingService
 
     private function createAggregationFilter($aggregation): ?AggregationResult
     {
-        // Speziele aggregation gefunden über den nahmen
-        switch ($aggregation->key) {
-            case 'color':
-                return $this->colorLogic->MakairaColorFilter($aggregation);
+        if ($aggregation->key === 'color') {
+            return $this->colorLogic->MakairaColorFilter($aggregation);
         }
 
         // Generic aggregation die für alle gleich sind.
-        switch ($aggregation->type) {
-            case 'range_slider_price':
-                return new StatsResult('filter_' . $aggregation->key, $aggregation->min, $aggregation->max, ($aggregation->min + $aggregation->max) / 2, $aggregation->max);
-            case 'list_multiselect':
-            case 'list_multiselect_custom_1':
-                return $this->createCustomAggregationFilter($aggregation);
-            default:
-                return null; // In case none of the types match
-        }
+        return match ($aggregation->type) {
+            'range_slider_price' => new StatsResult('filter_' . $aggregation->key, $aggregation->min, $aggregation->max, ($aggregation->min + $aggregation->max) / 2, $aggregation->max),
+            'list_multiselect', 'list_multiselect_custom_1' => $this->createCustomAggregationFilter($aggregation),
+            default => null,
+        };
     }
 
     private function createCustomAggregationFilter($aggregation): ?EntityResult
@@ -73,11 +67,9 @@ class AggregationProcessingService
             $option->setTranslated(['name' => $aggregation->title]);
             $options[] = $option;
 
-            $makFilter = new EntityResult('filter_' . $aggregation->key, new EntityCollection(
+            return new EntityResult('filter_' . $aggregation->key, new EntityCollection(
                 $options
             ));
-
-            return $makFilter;
         }
 
         return null;

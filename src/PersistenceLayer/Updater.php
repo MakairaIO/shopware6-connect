@@ -67,7 +67,7 @@ final class Updater
             }
         }
 
-        if (0 < \count($bulkInsert)) {
+        if ([] !== $bulkInsert) {
             $apiGateway->insertPersistenceRevisions($bulkInsert);
         }
 
@@ -96,7 +96,7 @@ final class Updater
             ];
         });
 
-        if (0 < \count($items)) {
+        if ([] !== $items) {
             $apiGateway->deletePersistenceRevisions($items, $this->getLanguageCode($context));
         }
     }

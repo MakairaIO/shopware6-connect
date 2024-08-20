@@ -15,7 +15,7 @@ class ModifierQueryRequestEvent extends Event
 
     public const NAME_AUTOSUGGESTER = 'makaira.request.modifier.query.autosuggester';
 
-    private \ArrayObject $query;
+    private readonly \ArrayObject $query;
 
     public function __construct(
         array $query,

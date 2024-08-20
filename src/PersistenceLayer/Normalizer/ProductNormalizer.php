@@ -46,9 +46,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             'path' => '',
         ]);
 
-        $images = $entity->getMedia()->fmap(function (ProductMediaEntity $media): ?array {
-            return $this->processMedia($media->getMedia());
-        });
+        $images = $entity->getMedia()->fmap(fn(ProductMediaEntity $media): ?array => $this->processMedia($media->getMedia()));
 
         return [
             'id' => $entity->getId(),
@@ -106,7 +104,7 @@ final readonly class ProductNormalizer implements NormalizerInterface
             $searchKeys[] = $product->getTranslation('customSearchKeywords');
         }
 
-        return 0 < \count($searchKeys) ? implode(' ', $searchKeys) : null;
+        return [] !== $searchKeys ? implode(' ', $searchKeys) : null;
     }
 
     private function getGroupedOptions(?PropertyGroupOptionCollection $properties, ?PropertyGroupOptionCollection $options): array

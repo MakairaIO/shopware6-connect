@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Makaira\Connect\Core\Content\Product\SalesChannel\Search;
 
+use Exception;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Makaira\Connect\Exception\NoDataException;
 use Makaira\Connect\Service\AggregationProcessingService;
 use Makaira\Connect\Service\BannerProcessingService;
@@ -20,11 +22,14 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use stdClass;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+
+use function count;
 
 class ProductSearchRoute extends AbstractProductSearchRoute
 {
@@ -37,7 +42,7 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         private readonly MakairaProductFetchingService $makairaProductFetchingService,
         private readonly AggregationProcessingService $aggregationProcessingService,
         private readonly BannerProcessingService $bannerProcessingService,
-        private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $httpClientLogger,
     ) {
     }
 
@@ -59,11 +64,11 @@ class ProductSearchRoute extends AbstractProductSearchRoute
 
             $makairaResponse = $this->makairaProductFetchingService->fetchProductsFromMakaira($context, $query, $criteria, $makairaSorting, $makairaFilter);
 
-            if (null === $makairaResponse) {
+            if (!$makairaResponse instanceof stdClass) {
                 throw new NoDataException('Keine Daten oder fehlerhaft vom Makaira Server.');
             }
-        } catch (\Exception $exception) {
-            $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+        } catch (Exception $exception) {
+            $this->httpClientLogger->error('[Makaira] ' . $exception->getMessage(), ['type' => self::class]);
 
             return $this->decorated->load($request, $context, $criteria);
         }
@@ -78,8 +83,8 @@ class ProductSearchRoute extends AbstractProductSearchRoute
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse, $request, $criteria, $context);
 
         $result = (new Pipeline())
-            ->pipe(fn ($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
-            ->pipe(fn ($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
+            ->pipe(fn ($payload): EntitySearchResult => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
+            ->pipe(fn ($payload): EntitySearchResult => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
             ->process($shopwareResult);
 
         $this->eventDispatcher->dispatch(new ProductSearchCriteriaEvent($request, $criteria, $context), ProductEvents::PRODUCT_SEARCH_CRITERIA);
@@ -94,15 +99,15 @@ class ProductSearchRoute extends AbstractProductSearchRoute
     private function validateSearchRequest(Request $request): void
     {
         if (!$request->get('search')) {
-            throw new MissingRequestParameterException('search');
+            throw RoutingException::missingRequestParameter('search');
         }
     }
 
-    private function checkForSearchRedirect($makairaResponse): ?string
+    private function checkForSearchRedirect(stdClass $makairaResponse): ?string
     {
         $redirects = isset($makairaResponse->searchredirect) ? $makairaResponse->searchredirect->items : [];
 
-        if (\count($redirects) > 0) {
+        if (count($redirects) > 0) {
             $targetUrl = $redirects[0]->fields->targetUrl;
 
             if ($targetUrl) {

@@ -12,19 +12,20 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 
-class ShopwareProductFetchingService
+readonly class ShopwareProductFetchingService
 {
     public function __construct(
-        private readonly SalesChannelRepository $salesChannelProductRepository,
-        private readonly RequestCriteriaBuilder $criteriaBuilder,
-        private readonly ProductDefinition $definition,
+        private SalesChannelRepository $salesChannelProductRepository,
+        private RequestCriteriaBuilder $criteriaBuilder,
+        private ProductDefinition $definition,
     ) {
     }
 
     public function fetchProductsFromShopware(
-        $makairaResponse,
+        stdClass $makairaResponse,
         Request $request,
         Criteria $criteria,
         SalesChannelContext $context,
@@ -39,9 +40,7 @@ class ShopwareProductFetchingService
         $shopwareResult->getCriteria()->setLimit($criteria->getLimit());
         $shopwareResult->setLimit($criteria->getLimit());
 
-        $shopwareResult = $this->reorderProductsAccordingToMakairaIds($shopwareResult, $ids, $makairaResponse->product->total);
-
-        return $shopwareResult;
+        return $this->reorderProductsAccordingToMakairaIds($shopwareResult, $ids, $makairaResponse->product->total);
     }
 
     private function buildNewCriteriaFromRequestAndMakairaResponse(Request $request, array $ids, SalesChannelContext $context, Criteria $originalCriteria): Criteria
@@ -63,9 +62,9 @@ class ShopwareProductFetchingService
         return $newCriteria;
     }
 
-    private function extractProductIdsFromMakairaResponse(\stdClass $makairaResponse): array
+    private function extractProductIdsFromMakairaResponse(stdClass $makairaResponse): array
     {
-        return array_map(fn ($product) => $product->id, $makairaResponse->product->items);
+        return array_map(static fn ($product) => $product->id, $makairaResponse->product->items);
     }
 
     private function searchShopwareProducts(Criteria $newCriteria, SalesChannelContext $context): EntitySearchResult
@@ -77,7 +76,7 @@ class ShopwareProductFetchingService
     {
         $productMap = array_column($shopwareResult->getEntities()->getElements(), null, 'productNumber');
 
-        $orderedProducts = array_filter(array_map(fn ($id) => $productMap[$id] ?? null, $ids));
+        $orderedProducts = array_filter(array_map(static fn ($id) => $productMap[$id] ?? null, $ids));
 
         return new EntitySearchResult('product', $total, new EntityCollection($orderedProducts), $shopwareResult->getAggregations(), $shopwareResult->getCriteria(), $shopwareResult->getContext());
     }

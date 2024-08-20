@@ -96,7 +96,7 @@ class ColorLogic
         ));
     }
 
-    private function getColorName(int $key)
+    private function getColorName(int $key): string
     {
         if (!isset(self::colorIds[$key])) {
             throw new AggregationException('Farbenamen nicht gefunden in Map \Makaira\Connect\Utils\ColorLogic::colorIds für Key: ' . $key);
@@ -105,7 +105,7 @@ class ColorLogic
         return self::colorIds[$key];
     }
 
-    private function getColorLocalizedName(int $key)
+    private function getColorLocalizedName(int $key): string
     {
         if (!isset(self::localizedColorNames[$key])) {
             throw new AggregationException('Farbenamen nicht gefunden in Map \Makaira\Connect\Utils\ColorLogic::localizedColorNames für Key: ' . $key);

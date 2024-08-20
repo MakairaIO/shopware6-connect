@@ -11,10 +11,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
 #[Package('content')]
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class CachedCategoryRoute extends AbstractCategoryRoute
 {
     public function __construct(
@@ -34,6 +32,6 @@ class CachedCategoryRoute extends AbstractCategoryRoute
         $request->query->set('slots', null);
 
         // dont use the cache layer
-        return $this->getDecorated()->getDecorated()->load($navigationId, $request, $context);
+        return $this->getDecorated()->load($navigationId, $request, $context);
     }
 }

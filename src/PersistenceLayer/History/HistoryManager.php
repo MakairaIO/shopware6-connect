@@ -56,7 +56,7 @@ final readonly class HistoryManager
 
         $ids = $this->repository->searchIds($criteria, $context->getContext())->getIds();
 
-        if (0 < \count($ids)) {
+        if ([] !== $ids) {
             $this->repository->delete(array_map(fn (string $id): array => ['id' => $id], $ids), $context->getContext());
         }
     }
@@ -86,7 +86,7 @@ final readonly class HistoryManager
         foreach ($grouped as $group) {
             $delete = \array_slice($group, $keep);
 
-            if (0 < \count($delete)) {
+            if ([] !== $delete) {
                 $this->repository->delete(array_map(fn (string $id): array => ['id' => $id], $delete), $context->getContext());
             }
         }

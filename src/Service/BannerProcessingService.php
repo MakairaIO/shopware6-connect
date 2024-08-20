@@ -9,21 +9,22 @@ use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use stdClass;
 
-class BannerProcessingService
+readonly class BannerProcessingService
 {
-    public function __construct(private readonly PluginConfig $config)
+    public function __construct(private PluginConfig $config)
     {
     }
 
-    public function getBaseMediaUrl($context, $mediaUrl)
+    public function getBaseMediaUrl($context, string $mediaUrl): string
     {
         return 'https://' . $this->config->getApiCustomer($context->getSalesChannelId()) . '.makaira.media/' . $mediaUrl;
     }
 
     public function processBannersFromMakairaResponse(
         EntitySearchResult $shopwareResult,
-        \stdClass $makairaResponse,
+        stdClass $makairaResponse,
         SalesChannelContext $context,
     ): EntitySearchResult {
         $banner = [];

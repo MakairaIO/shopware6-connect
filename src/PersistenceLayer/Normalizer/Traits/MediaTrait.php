@@ -10,7 +10,7 @@ trait MediaTrait
 {
     private function processMedia(?MediaEntity $media): ?array
     {
-        if (null === $media) {
+        if (!$media instanceof MediaEntity) {
             return null;
         }
 

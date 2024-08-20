@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Makaira\Connect\Core\Content\Product\SalesChannel\Listing;
 
+use AllowDynamicProperties;
+use Exception;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Makaira\Connect\Exception\NoDataException;
 use Makaira\Connect\Service\AggregationProcessingService;
 use Makaira\Connect\Service\BannerProcessingService;
@@ -27,10 +30,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-#[\AllowDynamicProperties]
+#[AllowDynamicProperties]
 class ProductListingRoute extends AbstractProductListingRoute
 {
     public function __construct(
@@ -45,7 +49,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         private readonly ShopwareProductFetchingService $shopwareProductFetchingService,
         private readonly AggregationProcessingService $aggregationProcessingService,
         private readonly BannerProcessingService $bannerProcessingService,
-        private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $httpClientLogger,
     ) {
         $this->decorated = $decorated;
         $this->categoryRepository = $categoryRepository;
@@ -86,11 +90,11 @@ class ProductListingRoute extends AbstractProductListingRoute
 
             $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $catId, $criteria, $makairaFilter, $makairaSorting);
 
-            if (null === $makairaResponse) {
+            if (!$makairaResponse instanceof stdClass) {
                 throw new NoDataException('Keine Daten oder fehlerhaft vom Makaira Server.');
             }
-        } catch (\Exception $exception) {
-            $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+        } catch (Exception $exception) {
+            $this->httpClientLogger->error('[Makaira] ' . $exception->getMessage(), ['type' => self::class]);
 
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
@@ -98,8 +102,8 @@ class ProductListingRoute extends AbstractProductListingRoute
         $shopwareResult = $this->shopwareProductFetchingService->fetchProductsFromShopware($makairaResponse, $request, $criteria, $context);
 
         $result = (new Pipeline())
-            ->pipe(fn ($payload) => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
-            ->pipe(fn ($payload) => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
+            ->pipe(fn ($payload): EntitySearchResult => $this->aggregationProcessingService->processAggregationsFromMakairaResponse($payload, $makairaResponse))
+            ->pipe(fn ($payload): EntitySearchResult => $this->bannerProcessingService->processBannersFromMakairaResponse($payload, $makairaResponse, $context))
             ->process($shopwareResult);
 
         /** @var ProductListingResult $result */
@@ -141,7 +145,6 @@ class ProductListingRoute extends AbstractProductListingRoute
         $categoryCriteria = new Criteria([$categoryId]);
         $categoryCriteria->setTitle('product-listing-route::category-loading');
 
-        /** @var CategoryEntity $category */
         return $this->categoryRepository->search($categoryCriteria, $context->getContext())->first();
     }
 }

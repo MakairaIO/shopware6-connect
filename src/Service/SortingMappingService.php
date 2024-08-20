@@ -34,6 +34,6 @@ class SortingMappingService
             }
         }
 
-        return $sort ? [$sort[0][0] => $sort[0][1]] : [];
+        return $sort !== [] ? [$sort[0][0] => $sort[0][1]] : [];
     }
 }

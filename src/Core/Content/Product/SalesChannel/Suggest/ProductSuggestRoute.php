@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Makaira\Connect\Core\Content\Product\SalesChannel\Suggest;
 
+use AllowDynamicProperties;
 use Makaira\Connect\Service\MakairaProductFetchingService;
 use Makaira\Connect\Service\ShopwareProductFetchingService;
 use Psr\Log\LoggerInterface;
@@ -18,18 +19,18 @@ use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\Suggest\AbstractProductSuggestRoute;
 use Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRouteResponse;
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\Framework\Feature;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 
-#[\AllowDynamicProperties]
+#[AllowDynamicProperties]
 class ProductSuggestRoute extends AbstractProductSuggestRoute
 {
     public function __construct(
@@ -42,7 +43,7 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
         ProductDefinition $definition,
         private readonly MakairaProductFetchingService $makairaProductFetchingService,
         private readonly ShopwareProductFetchingService $shopwareProductFetchingService,
-        private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $httpClientLogger,
     ) {
         $this->decorated = $decorated;
         $this->eventDispatcher = $eventDispatcher;
@@ -61,14 +62,14 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): ProductSuggestRouteResponse
     {
         if (!$request->get('search')) {
-            throw new MissingRequestParameterException('search');
+            throw RoutingException::missingRequestParameter('search');
         }
         $criteria->addFilter(
             new ProductAvailableFilter($context->getSalesChannel()->getId(), ProductVisibilityDefinition::VISIBILITY_SEARCH)
         );
         $criteria->addState(Criteria::STATE_ELASTICSEARCH_AWARE);
         if (!Feature::isActive('v6.5.0.0')) {
-            $context->getContext()->addState(Context::STATE_ELASTICSEARCH_AWARE);
+            $context->getContext()->addState(Criteria::STATE_ELASTICSEARCH_AWARE);
         }
         $this->searchBuilder->build($request, $criteria, $context);
         $this->eventDispatcher->dispatch(
@@ -81,8 +82,8 @@ class ProductSuggestRoute extends AbstractProductSuggestRoute
 
         try {
             $makairaResponse = $this->makairaProductFetchingService->fetchSuggestionsFromMakaira($context, $query);
-        } catch (\Exception $exception) {
-            $this->logger->error('[Makaira] ' . $exception->getMessage(), ['type' => __CLASS__]);
+        } catch (Throwable $exception) {
+            $this->httpClientLogger->error('[Makaira] ' . $exception->getMessage(), ['type' => self::class]);
 
             return $this->decorated->load($request, $context, $criteria);
         }

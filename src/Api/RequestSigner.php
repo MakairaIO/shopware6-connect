@@ -10,7 +10,7 @@ final readonly class RequestSigner
     {
     }
 
-    public function sign($nonce, string $body): string
+    public function sign(string $nonce, string $body): string
     {
         return hash_hmac('sha256', $nonce . ':' . $body, $this->sharedSecret);
     }

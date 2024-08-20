@@ -29,7 +29,7 @@ final readonly class ApiGateway implements ApiGatewayInterface
 
     public function insertPersistenceRevisions(array $items): void
     {
-        if (0 === \count($items)) {
+        if ([] === $items) {
             return;
         }
 

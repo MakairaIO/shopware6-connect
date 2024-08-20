@@ -54,7 +54,7 @@ final readonly class EntityRepository
         foreach ($this->repositories as $entityName => $repository) {
             $criteria = new Criteria();
 
-            if (null !== $lastUpdate) {
+            if ($lastUpdate instanceof \DateTimeInterface) {
                 $lastUpdateFormatted = $lastUpdate->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
                 $criteria->addFilter(new OrFilter([
