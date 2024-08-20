@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final readonly class PluginInfo
 {
-    private const MAKAIRA_PLUGIN_VERSION = '1.0.0';
+    private const MAKAIRA_PLUGIN_VERSION = '1.0.1';
 
     public function __construct(private string $shopwareVersion)
     {

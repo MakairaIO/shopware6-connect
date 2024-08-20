@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/MakairaIO/shopware6-connect/compare/1.0.0...1.0.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* Create LICENSE ([d707365](https://github.com/MakairaIO/shopware6-connect/commit/d707365ceeb41b1cffec6beb2797a30baa8b0da1))
+
 # 1.0.0 (2024-08-05)
 
 
