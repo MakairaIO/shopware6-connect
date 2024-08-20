@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/MakairaIO/shopware6-connect/compare/2.0.1...2.0.2) (2024-08-20)
+
+
+### Bug Fixes
+
+* Add data export ([96ad255](https://github.com/MakairaIO/shopware6-connect/commit/96ad2552b9aec55624a0e3d8b9c30c0c6cb4e88a))
+
 ## [2.0.1](https://github.com/MakairaIO/shopware6-connect/compare/2.0.0...2.0.1) (2024-08-05)
 
 
