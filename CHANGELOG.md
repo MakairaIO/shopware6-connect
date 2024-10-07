@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/MakairaIO/shopware6-connect/compare/2.0.2...2.0.3) (2024-10-07)
+
+
+### Bug Fixes
+
+* **PHP:** Update PHP dependency to match shopware 6.5 ([b4fd434](https://github.com/MakairaIO/shopware6-connect/commit/b4fd434c27cca50f5a82366821530bed12985c1e))
+
 ## [2.0.2](https://github.com/MakairaIO/shopware6-connect/compare/2.0.1...2.0.2) (2024-08-20)
 
 
