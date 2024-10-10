@@ -1,3 +1,10 @@
+## [2.0.4](https://github.com/MakairaIO/shopware6-connect/compare/2.0.3...2.0.4) (2024-10-10)
+
+
+### Bug Fixes
+
+* hydration of history entities ([6fef8b5](https://github.com/MakairaIO/shopware6-connect/commit/6fef8b53f703262c1f663ba7074f6e17085de732))
+
 ## [2.0.3](https://github.com/MakairaIO/shopware6-connect/compare/2.0.2...2.0.3) (2024-10-07)
 
 
