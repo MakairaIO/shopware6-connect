@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/MakairaIO/shopware6-connect/compare/1.0.1...1.0.2) (2024-11-13)
+
+
+### Bug Fixes
+
+* remove version from composer.json ([58716f5](https://github.com/MakairaIO/shopware6-connect/commit/58716f5c8da8a7a40571964dc8c2ff86ed1661ce))
+
 ## [1.0.1](https://github.com/MakairaIO/shopware6-connect/compare/1.0.0...1.0.1) (2024-08-20)
 
 
