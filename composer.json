@@ -3,7 +3,6 @@
   "description": "Connect Shopware 6 to Makaira",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
-  "version": "0.1.0",
   "require": {
     "php": ">= 8.2",
     "shopware/core": "^6.4",
