@@ -1,3 +1,10 @@
+## [2.0.5](https://github.com/MakairaIO/shopware6-connect/compare/2.0.4...2.0.5) (2024-11-13)
+
+
+### Bug Fixes
+
+* remove version from composer.jscon ([aa78ff2](https://github.com/MakairaIO/shopware6-connect/commit/aa78ff2207d4b7a5ab40c0804b033ff627752e2a))
+
 ## [2.0.4](https://github.com/MakairaIO/shopware6-connect/compare/2.0.3...2.0.4) (2024-10-10)
 
 
