@@ -84,16 +84,8 @@ class MakairaProductFetchingService
     {
         $searchURL = $this->config->getApiBaseUrl($context->getSalesChannelId()) . '/search/';
 
-        /** loberon */
-        lbLoggerBrowser()->notice('Makaira request: ' . $payload['searchPhrase'] ?? '', ['searchURL' => $searchURL, 'payload' => $payload]);
-        /** end loberon */
         $http = $this->getClient($context)->request(method: 'POST', url: $searchURL, data: $payload);
         $handleResponse = $this->handleResponse($http);
-
-        /** loberon */
-        $row = $http->getContent();
-        lbLoggerBrowser()->notice('Makaira response', ['row' => $row, 'handleResponse' => $handleResponse]);
-        /** end loberon */
 
         return $handleResponse;
     }

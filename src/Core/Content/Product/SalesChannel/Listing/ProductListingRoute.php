@@ -76,12 +76,7 @@ class ProductListingRoute extends AbstractProductListingRoute
 
         $makairaFilter = $this->filterExtractionService->extractMakairaFiltersFromRequest($request);
 
-        $category = $this->fetchCategory($categoryId, $context);
-        if (isset($category->getCustomFields()['loberonCatId'])) {
-            $catId = $category->getCustomFields()['loberonCatId'];
-        } else {
-            return $this->decorated->load($categoryId, $request, $context, $criteria);
-        }
+        $category = $this->fetchCategory($categoryId, $context);       
 
         $streamId = $this->extendCriteria($context, $criteria, $category);
 
