@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/MakairaIO/shopware6-connect/compare/1.0.2...1.0.3) (2024-11-15)
+
+
+### Bug Fixes
+
+* add readme ([801d68b](https://github.com/MakairaIO/shopware6-connect/commit/801d68b59a6b6e301594fb15275b52074355f427))
+
 ## [1.0.2](https://github.com/MakairaIO/shopware6-connect/compare/1.0.1...1.0.2) (2024-11-13)
 
 
