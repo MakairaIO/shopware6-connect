@@ -1,3 +1,12 @@
+## [2.0.6](https://github.com/MakairaIO/shopware6-connect/compare/2.0.5...2.0.6) (2026-03-31)
+
+
+### Bug Fixes
+
+* **Categories:** Hide external Categories from search result ([#27](https://github.com/MakairaIO/shopware6-connect/issues/27)) ([9bd1b9e](https://github.com/MakairaIO/shopware6-connect/commit/9bd1b9ef81e00cbbf978c91d9b2ccb14307a471d))
+* add readme ([e2c14f1](https://github.com/MakairaIO/shopware6-connect/commit/e2c14f16301600f1195493456d67c2fd158f9db3))
+* remove customer specific adjustments ([2e4094b](https://github.com/MakairaIO/shopware6-connect/commit/2e4094b52c55e7a84190f031a296a629352b30a5))
+
 ## [2.0.6](https://github.com/MakairaIO/shopware6-connect/compare/2.0.5...2.0.6) (2024-11-25)
 
 
