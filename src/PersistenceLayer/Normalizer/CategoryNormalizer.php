@@ -49,7 +49,7 @@ final readonly class CategoryNormalizer implements NormalizerInterface
             'customFields' => $this->processCustomFields($entity->getCustomFields()),
             'sorting' => $this->getSorting($entity, $context),
             'active' => $entity->getActive(),
-            'hidden' => !$entity->getVisible(),
+            'hidden' => !$entity->getVisible() || $entity->getType() === 'link',
             'image' => $this->processMedia($entity->getMedia()),
             'url' => $this->urlGenerator->generate($entity, $context),
             'timestamp' => ($entity->getUpdatedAt() ?? $entity->getCreatedAt())->format('Y-m-d H:i:s'),
