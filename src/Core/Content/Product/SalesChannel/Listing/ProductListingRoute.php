@@ -83,7 +83,7 @@ class ProductListingRoute extends AbstractProductListingRoute
         try {
             $makairaSorting = $this->sortingMappingService->mapSortingCriteria($criteria);
 
-            $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $catId, $criteria, $makairaFilter, $makairaSorting);
+            $makairaResponse = $this->makairaProductFetchingService->fetchMakairaProductsFromCategory($context, $categoryId, $criteria, $makairaFilter, $makairaSorting);
 
             if (!$makairaResponse instanceof stdClass) {
                 throw new NoDataException('Keine Daten oder fehlerhaft vom Makaira Server.');
